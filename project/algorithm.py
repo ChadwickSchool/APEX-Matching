@@ -3,7 +3,7 @@ import flask
 from flask import Flask, render_template, request
 from sqlalchemy import create_engine, asc, desc
 from sqlalchemy.orm import sessionmaker
-from database_setup import Base, Room, engine, Project
+from database_setup import Base, engine, Project, Student, Pref
 import random
 import string
 from oauth2client.client import flow_from_clientsecrets
@@ -20,7 +20,7 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
-number_of_prefs = 4
+number_of_prefs = 2
 
 def sort_proj_by_size():
     projs = []
@@ -43,7 +43,5 @@ def get_popularity_score(project):
     prefs = session.query(Pref).filter_by(name = project_name)
     first_prefs = prefs.filter_by(pref_number = 1).all()
     second_prefs = prefs.filter_by(pref_number = 2).all()
-    third_prefs = prefs.filter_by(pref_number = 3).all()
-    fourth_prefs = prefs.filter_by(pref_number = 4).all()
-    total_score = len(first_prefs)*4 + len(second_prefs)*3 + len(third_prefs)*2 + len(fourth_prefs)
+    total_score = len(first_prefs)*2 + len(second_prefs)
     return total_score

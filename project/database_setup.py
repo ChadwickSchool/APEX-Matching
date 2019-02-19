@@ -7,7 +7,7 @@ from sqlalchemy.sql import func
 
 Base = declarative_base()
 
-project_student_link = Table('project_student_link', base.metadata,
+project_student_link = Table('project_student_link', Base.metadata,
     Column('project_id', Integer, ForeignKey('project.id')),
     Column('student_id', Integer, ForeignKey('student.id')))
 
@@ -27,7 +27,6 @@ class Project(Base):
             'project_name' : self.name,
             'students' : [student.serialize for student in self.students]
         }
-    full = Column(Boolean)
 
 
 class Student(Base):
@@ -52,7 +51,10 @@ class Pref(Base):
     __tablename__ = 'pref'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    pref_number = Column(Int(3))
+    pref_number = Column(Integer)
     name = Column(String(32))
     student_id = Column(Integer, ForeignKey('student.id'))
     student = relationship(Student)
+
+engine = create_engine('sqlite:///database.db')
+Base.metadata.create_all(engine)
