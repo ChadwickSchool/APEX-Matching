@@ -8,24 +8,32 @@ from sqlalchemy.sql import func
 Base = declarative_base()
 
 project_student_link = Table('project_student_link', Base.metadata,
-    Column('project_id', Integer, ForeignKey('project.id')),
-    Column('student_id', Integer, ForeignKey('student.id')))
+                             Column('project_id', Integer,
+                                    ForeignKey('project.id')),
+                             Column('student_id', Integer,
+                                    ForeignKey('student.id')))
 
 
-class Project(Base):
+class Projec
+
+
+t(Base):
     __tablename__ = 'project'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(32))
     stud_name = Column(String(32))
+    raw_score = Column(Integer, nullable=True)
+    pop_score = Column(Integer, nullable=True)
     students = relationship('Student', secondary=project_student_link,
-                                back_populates='projects')
+                            back_populates='projects')
+
     @property
     def serialize(self):
         return {
-            'id' : self.id,
-            'project_name' : self.name,
-            'students' : [student.serialize for student in self.students]
+            'id': self.id,
+            'project_name': self.name,
+            'students': [student.serialize for student in self.students]
         }
 
 
@@ -36,14 +44,15 @@ class Student(Base):
     first_name = Column(String(32))
     last_name = Column(String(32))
     projects = relationship('Project', secondary=project_student_link,
-                                back_populates='students')
+                            back_populates='students')
+
     @property
     def serialize(self):
         return {
-            'id' : self.id,
-            'first_name' : self.first_name,
-            'last_name' : self.last_name,
-            'projects' : [project.serialize for project in self.projects]
+            'id': self.id,
+            'first_name': self.first_name,
+            'last_name': self.last_name,
+            'projects': [project.serialize for project in self.projects]
         }
 
 
@@ -55,6 +64,7 @@ class Pref(Base):
     name = Column(String(32))
     student_id = Column(Integer, ForeignKey('student.id'))
     student = relationship(Student)
+
 
 engine = create_engine('sqlite:///database.db')
 Base.metadata.create_all(engine)

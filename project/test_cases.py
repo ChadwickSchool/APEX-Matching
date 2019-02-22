@@ -5,6 +5,7 @@ from database_setup import Base, Student, engine, Project, Pref
 import os
 import unittest
 from algorithm import get_raw_score, get_popularity_score
+from algorithm import raw_sort, get_underfilled_groups
 
 
 app = Flask(__name__)
@@ -15,7 +16,6 @@ session = DBSession()
 
 
 class BasicTests(unittest.TestCase):
-
 
     def test_raw_score(self):
         list_score = []
@@ -36,6 +36,17 @@ class BasicTests(unittest.TestCase):
         expected_results = [18, 0, 18, 12, 15, 14, 7, 3]
         print(list_score)
         self.assertEqual(list_score, expected_results)
+
+    def test_raw_sort(self):
+        projs = raw_sort()
+        expected_results = ['B', 'H', 'G', 'D', 'F', 'E', 'A', 'C']
+        print(projs)
+        self.assertEqual(projs, expected_results)
+
+    def test_get_underfilled_groups(self):
+        projs = get_underfilled_groups()
+        expected_results = ['B', 'H']
+        self.assertEqual(projs, expected_results)
 
 
 if __name__ == "__main__":

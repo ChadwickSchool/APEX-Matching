@@ -22,26 +22,51 @@ session = DBSession()
 
 number_of_prefs = 2
 
-def sort_proj_by_size():
-    projs = []
-    projects = session.query(Project).all()
-    projects.sort(key=lambda project: project.size, reverse=False)
-    for proj in projects:
-        project = [proj.name, proj.size]
-        projs.append(project)
-    return projs
-
 
 def get_raw_score(project):
     project_name = project.name
-    prefs = session.query(Pref).filter_by(name = project_name).all()
+    prefs = session.query(Pref).filter_by(name=project_name).all()
     return len(prefs)
 
 
 def get_popularity_score(project):
     project_name = project.name
-    prefs = session.query(Pref).filter_by(name = project_name)
-    first_prefs = prefs.filter_by(pref_number = 1).all()
-    second_prefs = prefs.filter_by(pref_number = 2).all()
-    total_score = len(first_prefs)*2 + len(second_prefs)
+    prefs = session.query(Pref).filter_by(name=project_name)
+    first_prefs = prefs.filter_by(pref_number=1).all()
+    second_prefs = prefs.filter_by(pref_number=2).all()
+    total_score = len(first_prefs) * 2 + len(second_prefs)
     return total_score
+
+
+def create_project_object(project):
+    project_name = project.name
+    session.query(Project).filter_by(name=project_name).one()
+    students = []
+    raw_score = get_raw_score(project)
+    pop_score = get_popularity_score(project)
+    proj = Project(project, project_name, students, raw_score, pop_score)
+    return proj
+
+
+def raw_sort():
+    projs = []
+    projects = session.query(Project).all()
+    for proj in projects:
+        proj.raw_score = get_raw_score(proj)
+        session.add(proj)
+        session.commit()
+    projects = session.query(Project).all()
+    projects.sort(key=lambda Project: Project.raw_score, reverse=False)
+    for proj in projects:
+        projs.append(proj.name)
+    return projs
+
+
+def get_underfilled_groups():
+    projs = []
+    projects = raw_sort()
+    for proj in projects:
+        project = session.query(Project).filter_by(name=proj).one()
+        if project.raw_score < 3:
+            projs.append(project.name)
+    return projs
