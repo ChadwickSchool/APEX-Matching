@@ -14,10 +14,7 @@ project_student_link = Table('project_student_link', Base.metadata,
                                     ForeignKey('student.id')))
 
 
-class Projec
-
-
-t(Base):
+class Project(Base):
     __tablename__ = 'project'
 
     id = Column(Integer, primary_key=True, autoincrement=True)

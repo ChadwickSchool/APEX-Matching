@@ -6,6 +6,7 @@ import os
 import unittest
 from algorithm import get_raw_score, get_popularity_score
 from algorithm import raw_sort, get_underfilled_groups
+from algorithm import pop_sort
 
 
 app = Flask(__name__)
@@ -42,6 +43,13 @@ class BasicTests(unittest.TestCase):
         expected_results = ['B', 'H', 'G', 'D', 'F', 'E', 'A', 'C']
         print(projs)
         self.assertEqual(projs, expected_results)
+
+    def test_pop_sort(self):
+        projs = pop_sort()
+        expected_results = ['G', 'D', 'F', 'E', 'A', 'C']
+        print(projs)
+        self.assertEqual(projs, expected_results)
+
 
     def test_get_underfilled_groups(self):
         projs = get_underfilled_groups()

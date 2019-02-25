@@ -61,6 +61,20 @@ def raw_sort():
         projs.append(proj.name)
     return projs
 
+def pop_sort():
+    projs = []
+    projects = session.query(Project).all()
+    for proj in projects:
+        proj.pop_score = get_popularity_score(proj)
+        proj.raw_score = get_raw_score(proj)
+        session.add(proj)
+        session.commit()
+    projects = session.query(Project).all()
+    projects.sort(key=lambda Project: Project.raw_score, reverse=False)
+    for proj in projects:
+        if proj.raw_score > 2:
+            projs.append(proj.name)
+    return projs
 
 def get_underfilled_groups():
     projs = []
