@@ -6,6 +6,3 @@ class Project_class:
         project.students = students
         project.raw_score = raw_score
         project.pop_score = popularity_score
-
-    def get_size(project):
-        return len(project.students)

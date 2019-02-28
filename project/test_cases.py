@@ -56,6 +56,7 @@ class BasicTests(unittest.TestCase):
         expected_results = ['B', 'H']
         self.assertEqual(projs, expected_results)
 
+        
 
 if __name__ == "__main__":
     unittest.main()

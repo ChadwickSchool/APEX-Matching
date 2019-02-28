@@ -4,6 +4,7 @@ from flask import Flask, render_template, request
 from sqlalchemy import create_engine, asc, desc
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, engine, Project, Student, Pref
+from project_class import Project_class
 import random
 import string
 from oauth2client.client import flow_from_clientsecrets
@@ -84,3 +85,29 @@ def get_underfilled_groups():
         if project.raw_score < 3:
             projs.append(project.name)
     return projs
+
+def give_all_prefs():
+    projs = get_underfilled_groups()
+    project_objs =[]
+    for proj in projs:
+        project = session.query(Project).filter_by(name = proj).one()
+        students = session.query(Pref).filter_by(name = proj).all()
+        student_names = []
+        for stud in students:
+            student = session.query(Student).filter_by(id = stud.student_id).one()
+            if student.matched is 0:
+                student_names.append(student.first_name)
+                student.matched = 1
+                session.add(student)
+                session.commit()
+        raw_score = get_raw_score(project)
+        pop_score = get_popularity_score(project)
+        project_obj = Project_class(proj, student_names, raw_score, pop_score)
+        project_objs.append(project_objs)
+        print("project name: " + project_obj.proj_name)
+        print("students: ")
+        print(project_obj.students)
+    return project_objs
+
+
+give_all_prefs()
