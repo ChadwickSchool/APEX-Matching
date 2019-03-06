@@ -6,3 +6,11 @@ class Project_class:
         project.students = students
         project.raw_score = raw_score
         project.pop_score = popularity_score
+
+    def __eq__(self, other):
+        if isinstance(self, other.__class__):
+            return (self.proj_name == other.proj_name
+                    and self.students == other.students
+                    and self.test_raw_score == other.raw_score
+                    and self.pop_score == other.pop_score)
+        return False

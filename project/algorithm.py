@@ -22,6 +22,7 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 number_of_prefs = 2
+max_studs_per_group = 5
 
 
 def get_raw_score(project):
@@ -62,6 +63,7 @@ def raw_sort():
         projs.append(proj.name)
     return projs
 
+
 def pop_sort():
     projs = []
     projects = session.query(Project).all()
@@ -77,6 +79,7 @@ def pop_sort():
             projs.append(proj.name)
     return projs
 
+
 def get_underfilled_groups():
     projs = []
     projects = raw_sort()
@@ -86,15 +89,17 @@ def get_underfilled_groups():
             projs.append(project.name)
     return projs
 
+
 def give_all_prefs():
     projs = get_underfilled_groups()
-    project_objs =[]
+    project_objs = []
     for proj in projs:
-        project = session.query(Project).filter_by(name = proj).one()
-        students = session.query(Pref).filter_by(name = proj).all()
+        project = session.query(Project).filter_by(name=proj).one()
+        students = session.query(Pref).filter_by(name=proj).all()
         student_names = []
         for stud in students:
-            student = session.query(Student).filter_by(id = stud.student_id).one()
+            student = session.query(Student).filter_by(
+                id=stud.student_id).one()
             if student.matched is 0:
                 student_names.append(student.first_name)
                 student.matched = 1
@@ -107,7 +112,45 @@ def give_all_prefs():
         print("project name: " + project_obj.proj_name)
         print("students: ")
         print(project_obj.students)
+        print('\n')
     return project_objs
 
 
-give_all_prefs()
+def give_first_prefs():
+    projs = pop_sort()
+    project_objs = []
+    for proj in projs:
+        project = session.query(Project).filter_by(name=proj).one()
+        students = session.query(Pref).filter_by(name=proj)
+        students = students.filter_by(pref_number=1).all()
+        student_names = []
+        i = 0
+        for stud in students:
+            student = session.query(Student).filter_by(
+                id=stud.student_id).one()
+            if student.matched is 0:
+                if i < max_studs_per_group:
+                    student_names.append(student.first_name)
+                    student.matched = 1
+                    session.add(student)
+                    session.commit()
+                    i = i + 1
+        raw_score = get_raw_score(project)
+        pop_score = get_popularity_score(project)
+        project_obj = Project_class(proj, student_names, raw_score, pop_score)
+        project_objs.append(project_objs)
+        print("project name: " + project_obj.proj_name)
+        print("students: ")
+        print(project_obj.students)
+        print('\n')
+    return project_objs
+
+
+def get_unmatched_students():
+    students = session.query(Student).filter_by(matched=0).all()
+    studs = []
+    for student in students:
+        studs.append(student.first_name)
+    print("Unmatched Students: ")
+    print(studs)
+    return studs

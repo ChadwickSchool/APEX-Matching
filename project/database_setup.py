@@ -43,6 +43,7 @@ class Student(Base):
     matched = Column(Integer)
     projects = relationship('Project', secondary=project_student_link,
                             back_populates='students')
+
     @property
     def serialize(self):
         return {
