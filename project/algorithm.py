@@ -154,3 +154,7 @@ def get_unmatched_students():
     print("Unmatched Students: ")
     print(studs)
     return studs
+
+give_all_prefs()
+give_first_prefs()
+get_unmatched_students()
