@@ -8,9 +8,10 @@ class Project_class:
         project.pop_score = popularity_score
 
     def __eq__(self, other):
+        '''overrides default equals for project class'''
         if isinstance(self, other.__class__):
             return (self.proj_name == other.proj_name
                     and self.students == other.students
-                    and self.test_raw_score == other.raw_score
+                    and self.raw_score == other.raw_score
                     and self.pop_score == other.pop_score)
         return False

@@ -1,69 +1,78 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+"""Python file of all test cases for algorithm of APEX group making"""
+import unittest
+from flask import Flask
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from database_setup import Base, Student, engine, Project, Pref
-import os
-import unittest
+from database_setup import Base, engine, Project
 from algorithm import get_raw_score, get_popularity_score
 from algorithm import raw_sort, get_underfilled_groups
 from algorithm import pop_sort, give_all_prefs
-from algorithm import give_first_prefs, get_unmatched_students
+from algorithm import give_first_prefs
 from project_class import Project_class
 
-app = Flask(__name__)
-engine = create_engine('sqlite:///database.db')
+APP = Flask(__name__)
+ENGINE = create_engine('sqlite:///database.db')
 Base.metadata.bind = engine
-DBSession = sessionmaker(bind=engine)
-session = DBSession()
+DBSESSION = sessionmaker(bind=ENGINE)
+SESSION = DBSESSION()
 
 
 class BasicTests(unittest.TestCase):
+    """Umbrella class of all test cases"""
 
     def test_raw_score(self):
+        """Test if get raw score function works"""
         list_score = []
-        projects = session.query(Project).all()
+        projects = SESSION.query(Project).all()
         for proj in projects:
             score = get_raw_score(proj)
             list_score.append(score)
         expected_results = [12, 0, 12, 9, 10, 9, 4, 2]
-        print(list_score)
+        print list_score
         self.assertEqual(list_score, expected_results)
 
     def test_pop_score(self):
+        """Test if get pop score function works"""
         list_score = []
-        projects = session.query(Project).all()
+        projects = SESSION.query(Project).all()
         for proj in projects:
             score = get_popularity_score(proj)
             list_score.append(score)
         expected_results = [18, 0, 18, 12, 15, 14, 7, 3]
-        print(list_score)
+        print list_score
         self.assertEqual(list_score, expected_results)
 
     def test_raw_sort(self):
+        """Test if raw sort function works"""
         projs = raw_sort()
         expected_results = ['B', 'H', 'G', 'D', 'F', 'E', 'A', 'C']
-        print(projs)
+        print projs
         self.assertEqual(projs, expected_results)
 
     def test_pop_sort(self):
+        """Test if pop sort function works"""
         projs = pop_sort()
         expected_results = ['G', 'D', 'F', 'E', 'A', 'C']
-        print(projs)
+        print projs
         self.assertEqual(projs, expected_results)
 
     def test_get_underfilled_groups(self):
+        """Test if get underfilled groups function works"""
         projs = get_underfilled_groups()
         expected_results = ['B', 'H']
         self.assertEqual(projs, expected_results)
 
     def test_give_all_prefs(self):
+        """Test if give all prefs function works"""
         projs = give_all_prefs()
         project1 = Project_class('B', [], 0, 0)
         project2 = Project_class('H', ['Tim', 'Liz'], 2, 3)
         projects = [project1, project2]
-        return projects == projs
+        self.assertTrue(projs, projects)
+
 
     def test_give_first_prefs(self):
+        """Test if give first prefs function works"""
         projs = give_first_prefs()
         project1 = Project_class('G', ['Mary', 'Jen', 'Lin'], 4, 7)
         project2 = Project_class('D', ['Rick', 'Emily', 'Jason'], 9, 12)
@@ -75,8 +84,7 @@ class BasicTests(unittest.TestCase):
         project6 = Project_class(
             'C', ['Jack', 'Jim', 'James', 'Susan', 'Lisa'], 12, 18)
         projects = [project1, project2, project3, project4, project5, project6]
-        return projects == projs
-
+        self.assertEqual(projects, projs)
 
 if __name__ == "__main__":
     unittest.main()

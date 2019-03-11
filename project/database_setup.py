@@ -16,7 +16,6 @@ project_student_link = Table('project_student_link', Base.metadata,
 
 class Project(Base):
     __tablename__ = 'project'
-
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(32))
     stud_name = Column(String(32))
