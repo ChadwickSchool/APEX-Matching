@@ -1,5 +1,6 @@
 """Python file for APEX group making algorithm"""
-from flask import Flask
+from flask import Flask, render_template, request, redirect, jsonify, url_for
+from flask import flash
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, engine, Project, Student, Pref
@@ -12,8 +13,22 @@ Base.metadata.bind = engine
 DBSESSION = sessionmaker(bind=engine)
 SESSION = DBSESSION()
 
-NUMBER_OF_PREFS = 2
-MAX_STUDS_PER_GROUP = 5
+NUMBER_OF_PREFS = 4
+MAX_STUDS_PER_GROUP = 20
+NUM_OF_PROJS = 25
+PROJECTS = []
+
+
+@APP.route('/')
+@APP.route('/groups/')
+def show_projects():
+    """Returns list of projects in webpage"""
+    give_all_prefs()
+    give_first_prefs()
+    give_second_prefs()
+    give_third_prefs()
+    give_fourth_prefs()
+    return render_template('main.html', projects=PROJECTS)
 
 
 def get_raw_score(project):
@@ -29,8 +44,12 @@ def get_popularity_score(project):
     prefs = SESSION.query(Pref).filter_by(name=project_name)
     first_prefs = prefs.filter_by(pref_number=1).all()
     second_prefs = prefs.filter_by(pref_number=2).all()
-    total_score = len(first_prefs) * 2 + len(second_prefs)
+    third_prefs = prefs.filter_by(pref_number=3).all()
+    fourth_prefs = prefs.filter_by(pref_number=4).all()
+    total_score = len(first_prefs) * 4 + len(second_prefs) * \
+        3 + len(third_prefs) * 2 + len(fourth_prefs)
     return total_score
+
 
 def raw_sort():
     """Return the names of projects in order of lowest raw score to highest"""
@@ -70,7 +89,7 @@ def get_underfilled_groups():
     projects = raw_sort()
     for proj in projects:
         project = SESSION.query(Project).filter_by(name=proj).one()
-        if project.raw_score < 3:
+        if project.raw_score < 10:
             projs.append(project.name)
     return projs
 
@@ -78,7 +97,6 @@ def get_underfilled_groups():
 def give_all_prefs():
     """Return project objects of projects with all their prefs assigned"""
     projs = get_underfilled_groups()
-    project_objs = []
     for proj in projs:
         project = SESSION.query(Project).filter_by(name=proj).one()
         students = SESSION.query(Pref).filter_by(name=proj).all()
@@ -94,12 +112,8 @@ def give_all_prefs():
         raw_score = get_raw_score(project)
         pop_score = get_popularity_score(project)
         project_obj = Project_class(proj, student_names, raw_score, pop_score)
-        project_objs.append(project_obj)
-        print "project name: " + project_obj.proj_name
-        print "students: "
-        print project_obj.students
-        print '\n'
-    return project_objs
+        PROJECTS.extend(project_obj)
+    return PROJECTS
 
 
 def give_first_prefs():
@@ -107,7 +121,6 @@ def give_first_prefs():
     Return the project objects of projects with just their first prefs assigned
     """
     projs = pop_sort()
-    project_objs = []
     for proj in projs:
         project = SESSION.query(Project).filter_by(name=proj).one()
         students = SESSION.query(Pref).filter_by(name=proj)
@@ -127,20 +140,96 @@ def give_first_prefs():
         raw_score = get_raw_score(project)
         pop_score = get_popularity_score(project)
         project_obj = Project_class(proj, student_names, raw_score, pop_score)
-        project_objs.append(project_obj)
-        print "project name: " + project_obj.proj_name
-        print "students: "
-        print project_obj.students
-        print '\n'
-    return project_objs
+        PROJECTS.extend(project_obj)
+    return PROJECTS
+
+
+def give_second_prefs():
+    """
+    Return the project objects of projects with their second prefs assigned
+    """
+    projs = PROJECTS
+    for proj in projs:
+        prefs = SESSION.query(Pref).filter_by(matched=0)
+        prefs = prefs.filter_by(pref_number=2).all()
+        for pref in prefs:
+            if pref.name is proj.proj_name:
+                if len(proj.students) < MAX_STUDS_PER_GROUP:
+                    student = SESSION.query(
+                        Student).filter_by(id=pref.id).one()
+                    proj.students.extend(student.first_name)
+                    student.matched = 1
+                    SESSION.add(student)
+                    SESSION.commit()
+    return PROJECTS
+
+
+def give_third_prefs():
+    """
+    Return the project objects of projects with their third prefs assigned
+    """
+    projs = PROJECTS
+    for proj in projs:
+        prefs = SESSION.query(Pref).filter_by(matched=0)
+        prefs = prefs.filter_by(pref_number=3).all()
+        for pref in prefs:
+            if pref.name is proj.proj_name:
+                if len(proj.students) < MAX_STUDS_PER_GROUP:
+                    student = SESSION.query(
+                        Student).filter_by(id=pref.id).one()
+                    proj.students.extend(student.first_name)
+                    student.matched = 1
+                    SESSION.add(student)
+                    SESSION.commit()
+    return PROJECTS
+
+
+def give_fourth_prefs():
+    """
+    Return the project objects of projects with just their fourth prefs assigned
+    """
+    projs = PROJECTS
+    for proj in projs:
+        prefs = SESSION.query(Pref).filter_by(matched=0)
+        prefs = prefs.filter_by(pref_number=4).all()
+        for pref in prefs:
+            if pref.name is proj.proj_name:
+                if len(proj.students) < MAX_STUDS_PER_GROUP:
+                    student = SESSION.query(
+                        Student).filter_by(id=pref.id).one()
+                    proj.students.extend(student.first_name)
+                    student.matched = 1
+                    SESSION.add(student)
+                    SESSION.commit()
+    return PROJECTS
 
 
 def get_unmatched_students():
-    """Return first names of students not assigned to a project"""
+    """Return students that are unmatched in a project called Not Matched"""
     students = SESSION.query(Student).filter_by(matched=0).all()
+    project_objs = []
     studs = []
     for student in students:
+        print student.first_name
         studs.append(student.first_name)
-    print "Unmatched Students: "
-    print studs
-    return studs
+    project_obj = Project_class('Not Matched', studs, 0, 0)
+    project_objs.append(project_obj)
+    return project_objs
+
+
+def give_room_number(room_nums):
+    """Add room numbers for each project in database"""
+    n = 0
+    for room in room_nums:
+        if n < NUM_OF_PROJS:
+            proj = SESSION.query(Project).filter_by(id=n)
+            proj.room_number = room
+            SESSION.add(proj)
+            SESSION.commit()
+            n = n + 1
+
+
+if __name__ == '__main__':
+    APP.secret_key = 'super_secret_key'
+    APP.debug = True
+    APP.run(host='0.0.0.0', port=5000)

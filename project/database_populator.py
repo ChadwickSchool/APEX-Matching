@@ -17,6 +17,7 @@ project_E = Project(name='E')
 project_F = Project(name='F')
 project_G = Project(name='G')
 project_H = Project(name='H')
+project_none = Project(name='Not Matched')
 
 SESSION.add(project_A)
 SESSION.add(project_B)

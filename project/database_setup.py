@@ -21,6 +21,7 @@ class Project(Base):
     stud_name = Column(String(32))
     raw_score = Column(Integer, nullable=True)
     pop_score = Column(Integer, nullable=True)
+    room_number = Column(Integer, nullable=True)
     students = relationship('Student', secondary=project_student_link,
                             back_populates='projects')
 

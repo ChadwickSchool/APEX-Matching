@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+    {% for project in projects %}
+    <h1> {{project.proj_name}}</h1>
+    {% for student in project.students %}
+    <h2> {{student}}</h2>
+    {% endfor %}
+    {% endfor %}
+  </body>
+</html>

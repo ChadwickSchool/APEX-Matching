@@ -70,7 +70,6 @@ class BasicTests(unittest.TestCase):
         projects = [project1, project2]
         self.assertTrue(projs, projects)
 
-
     def test_give_first_prefs(self):
         """Test if give first prefs function works"""
         projs = give_first_prefs()
@@ -85,6 +84,7 @@ class BasicTests(unittest.TestCase):
             'C', ['Jack', 'Jim', 'James', 'Susan', 'Lisa'], 12, 18)
         projects = [project1, project2, project3, project4, project5, project6]
         self.assertEqual(projects, projs)
+
 
 if __name__ == "__main__":
     unittest.main()
