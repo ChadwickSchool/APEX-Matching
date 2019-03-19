@@ -148,8 +148,7 @@ def give_second_prefs():
     """
     Return the project objects of projects with their second prefs assigned
     """
-    projs = PROJECTS
-    for proj in projs:
+    for proj in PROJECTS:
         prefs = SESSION.query(Pref).filter_by(matched=0)
         prefs = prefs.filter_by(pref_number=2).all()
         for pref in prefs:
@@ -168,8 +167,7 @@ def give_third_prefs():
     """
     Return the project objects of projects with their third prefs assigned
     """
-    projs = PROJECTS
-    for proj in projs:
+    for proj in PROJECTS:
         prefs = SESSION.query(Pref).filter_by(matched=0)
         prefs = prefs.filter_by(pref_number=3).all()
         for pref in prefs:
@@ -188,8 +186,7 @@ def give_fourth_prefs():
     """
     Return the project objects of projects with just their fourth prefs assigned
     """
-    projs = PROJECTS
-    for proj in projs:
+    for proj in PROJECTS:
         prefs = SESSION.query(Pref).filter_by(matched=0)
         prefs = prefs.filter_by(pref_number=4).all()
         for pref in prefs:
