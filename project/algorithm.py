@@ -15,6 +15,7 @@ SESSION = DBSESSION()
 
 NUMBER_OF_PREFS = 4
 MAX_STUDS_PER_GROUP = 20
+MIN_STUDS_PER_GROUP = 10
 NUM_OF_PROJS = 25
 PROJECTS = []
 
@@ -32,14 +33,18 @@ def show_projects():
 
 
 def get_raw_score(project):
-    """Return the raw score of given project"""
+    """
+    Return # of students that have marked the given project as a preference
+    """
     project_name = project.name
     prefs = SESSION.query(Pref).filter_by(name=project_name).all()
     return len(prefs)
 
 
 def get_popularity_score(project):
-    """Return the popularity score of given project"""
+    """
+    Return weighted ranking of students' preference for given project
+    """
     project_name = project.name
     prefs = SESSION.query(Pref).filter_by(name=project_name)
     first_prefs = prefs.filter_by(pref_number=1).all()
@@ -89,29 +94,32 @@ def get_underfilled_groups():
     projects = raw_sort()
     for proj in projects:
         project = SESSION.query(Project).filter_by(name=proj).one()
-        if project.raw_score < 10:
+        if project.raw_score < MIN_STUDS_PER_GROUP:
             projs.append(project.name)
     return projs
 
 
 def give_all_prefs():
     """Return project objects of projects with all their prefs assigned"""
-    projs = get_underfilled_groups()
-    for proj in projs:
-        project = SESSION.query(Project).filter_by(name=proj).one()
-        students = SESSION.query(Pref).filter_by(name=proj).all()
+    # An underfilled project is a project where the number of students that want
+    # the project (raw score) is less than the minimum students per project
+    underfilled_projs_names = get_underfilled_groups()
+    for proj_name in underfilled_projs_names:
+        project = SESSION.query(Project).filter_by(name=proj_name).one()
+        prefs = SESSION.query(Pref).filter_by(name=proj_name).all()
         student_names = []
-        for stud in students:
+        for pref in prefs:
             student = SESSION.query(Student).filter_by(
-                id=stud.student_id).one()
-            if student.matched is 0:
+                id=pref.student_id).one()
+            if student.matched is False:
                 student_names.append(student.first_name)
-                student.matched = 1
+                student.matched = True
                 SESSION.add(student)
                 SESSION.commit()
         raw_score = get_raw_score(project)
         pop_score = get_popularity_score(project)
-        project_obj = Project_class(proj, student_names, raw_score, pop_score)
+        project_obj = Project_class(
+            proj_name, student_names, raw_score, pop_score)
         PROJECTS.extend(project_obj)
     return PROJECTS
 
@@ -120,20 +128,20 @@ def give_first_prefs():
     """
     Return the project objects of projects with just their first prefs assigned
     """
-    projs = pop_sort()
-    for proj in projs:
-        project = SESSION.query(Project).filter_by(name=proj).one()
-        students = SESSION.query(Pref).filter_by(name=proj)
-        students = students.filter_by(pref_number=1).all()
+    proj_names = pop_sort()
+    for proj_name in proj_names:
+        project = SESSION.query(Project).filter_by(name=proj_name).one()
+        prefs = SESSION.query(Pref).filter_by(name=proj_name)
+        prefs = prefs.filter_by(pref_number=1).all()
         student_names = []
         i = 0
-        for stud in students:
+        for pref in prefs:
             student = SESSION.query(Student).filter_by(
-                id=stud.student_id).one()
-            if student.matched is 0:
+                id=pref.student_id).one()
+            if student.matched is False:
                 if i < MAX_STUDS_PER_GROUP:
                     student_names.append(student.first_name)
-                    student.matched = 1
+                    student.matched = True
                     SESSION.add(student)
                     SESSION.commit()
                     i = i + 1
@@ -149,17 +157,15 @@ def give_second_prefs():
     Return the project objects of projects with their second prefs assigned
     """
     for proj in PROJECTS:
-        prefs = SESSION.query(Pref).filter_by(matched=0)
-        prefs = prefs.filter_by(pref_number=2).all()
+        prefs = SESSION.query(Pref).filter_by(pref_number=2).all()
         for pref in prefs:
-            if pref.name is proj.proj_name:
-                if len(proj.students) < MAX_STUDS_PER_GROUP:
-                    student = SESSION.query(
-                        Student).filter_by(id=pref.id).one()
-                    proj.students.extend(student.first_name)
-                    student.matched = 1
-                    SESSION.add(student)
-                    SESSION.commit()
+            student = SESSION.query(Student).filter_by(
+                id=pref.student_id).one()
+            if student.matched is False and pref.name is proj.proj_name and len(proj.students) < MAX_STUDS_PER_GROUP:
+                proj.students.extend(student.first_name)
+                student.matched = True
+                SESSION.add(student)
+                SESSION.commit()
     return PROJECTS
 
 
@@ -168,17 +174,15 @@ def give_third_prefs():
     Return the project objects of projects with their third prefs assigned
     """
     for proj in PROJECTS:
-        prefs = SESSION.query(Pref).filter_by(matched=0)
-        prefs = prefs.filter_by(pref_number=3).all()
+        prefs = SESSION.query(Pref).filter_by(pref_number=3).all()
         for pref in prefs:
-            if pref.name is proj.proj_name:
-                if len(proj.students) < MAX_STUDS_PER_GROUP:
-                    student = SESSION.query(
-                        Student).filter_by(id=pref.id).one()
-                    proj.students.extend(student.first_name)
-                    student.matched = 1
-                    SESSION.add(student)
-                    SESSION.commit()
+            student = SESSION.query(Student).filter_by(
+                id=pref.student_id).one()
+            if student.matched is False and pref.name is proj.proj_name and len(proj.students) < MAX_STUDS_PER_GROUP:
+                proj.students.extend(student.first_name)
+                student.matched = True
+                SESSION.add(student)
+                SESSION.commit()
     return PROJECTS
 
 
@@ -187,17 +191,15 @@ def give_fourth_prefs():
     Return the project objects of projects with just their fourth prefs assigned
     """
     for proj in PROJECTS:
-        prefs = SESSION.query(Pref).filter_by(matched=0)
-        prefs = prefs.filter_by(pref_number=4).all()
+        prefs = SESSION.query(Pref).filter_by(pref_number=4).all()
         for pref in prefs:
-            if pref.name is proj.proj_name:
-                if len(proj.students) < MAX_STUDS_PER_GROUP:
-                    student = SESSION.query(
-                        Student).filter_by(id=pref.id).one()
-                    proj.students.extend(student.first_name)
-                    student.matched = 1
-                    SESSION.add(student)
-                    SESSION.commit()
+            student = SESSION.query(Student).filter_by(
+                id=pref.student_id).one()
+            if student.matched is False and pref.name is proj.proj_name and len(proj.students) < MAX_STUDS_PER_GROUP:
+                proj.students.extend(student.first_name)
+                student.matched = True
+                SESSION.add(student)
+                SESSION.commit()
     return PROJECTS
 
 

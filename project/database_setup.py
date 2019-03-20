@@ -39,8 +39,7 @@ class Student(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     first_name = Column(String(32))
-    last_name = Column(String(32))
-    matched = Column(Integer)
+    matched = Column(Boolean, default=False)
     projects = relationship('Project', secondary=project_student_link,
                             back_populates='students')
 
