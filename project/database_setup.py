@@ -17,7 +17,7 @@ project_student_link = Table('project_student_link', Base.metadata,
 class Project(Base):
     __tablename__ = 'project'
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(32))
+    name = Column(String(500))
     stud_name = Column(String(32))
     raw_score = Column(Integer, nullable=True)
     pop_score = Column(Integer, nullable=True)
@@ -38,7 +38,8 @@ class Student(Base):
     __tablename__ = 'student'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    first_name = Column(String(32))
+    name = Column(String(100))
+    email = Column(String(100))
     matched = Column(Integer)
     projects = relationship('Project', secondary=project_student_link,
                             back_populates='students')
@@ -58,7 +59,7 @@ class Pref(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     pref_number = Column(Integer)
-    name = Column(String(32))
+    name = Column(String(500))
     student_id = Column(Integer, ForeignKey('student.id'))
     student = relationship(Student)
 
