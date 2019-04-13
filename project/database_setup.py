@@ -38,8 +38,9 @@ class Student(Base):
     __tablename__ = 'student'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(100))
-    email = Column(String(100))
+    name = Column(String(100), nullable=False)
+    email = Column(String(100), nullable=False)
+    picture = Column(String(250))
     matched = Column(Integer)
     projects = relationship('Project', secondary=project_student_link,
                             back_populates='students')
