@@ -1,3 +1,5 @@
+{% extends "main.html" %}
+{% block content %}
 <!-- Updated Google Sign-In -->
 <!--  Step 1: Include the below scripts in login.html <head>..</head> tag -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
@@ -13,7 +15,7 @@
 </script>
 <!--  Step 2: In the <body> tag, add the below button and div -->
 <button id="signinButton">Google Signin</button>
-<divid="result"></div>
+<div id="result"></div>
 <!--  Step 3: Add the below script before the ending </body> tag -->
 <script>
   $('#signinButton').click(function() {
@@ -45,3 +47,4 @@
     auth2.grantOfflineAccess().then(signInCallback);
   });
 </script>
+{% endblock %}

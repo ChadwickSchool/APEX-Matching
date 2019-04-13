@@ -18,23 +18,55 @@ app = Flask(__name__)
 # CLIENT_ID = json.loads(open('client_secrets.json', 'r').read())['web']['client_id']
 APPLICATION_NAME = "APEX Matching Project"
 
-engine = create_engine('sqlite:///database.db')
+engine = create_engine('sqlite:///database.db?check_same_thread=false')
 Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
-@app.route('/')
-@app.route('/home')
+CHOICES = {
+    'choice1': 1,
+    'choice2': 2,
+    'choice3': 3,
+    'choice4': 4
+}
+
+@app.route('/', methods=['POST', 'GET'])
+@app.route('/home', methods=['POST', 'GET'])
 def homepage():
+    if request.method == 'POST':
+        result = request.form
+        return render_template("rank_choices.html", chosen_projects=result.items())
+    if 'username' not in login_session:
+        return showLogin()
+
+    print login_session
     projects = session.query(Project).all()
+    flash("Welcome")
     return render_template('homepage.html', projects=projects)
+
+@app.route('/rank_choices', methods=['POST'])
+def rank_choices():
+    create_preferences(request.form.items())
+    flash("Your preferences have been saved")
+    return redirect(url_for('homepage'))
+
+
+def create_preferences(ranked_projects):
+    for choice_num, project_name in ranked_projects:
+        preference = Pref(pref_number=CHOICES[choice_num], name=project_name, student_id=getUserID(login_session['email']))
+        session.add(preference)
+
+    session.commit()
+
+
 
 @app.route('/login')
 def showLogin():
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
         for x in xrange(32))
     login_session['state'] = state
+    print state
     return render_template('login.html', STATE=state)
 
 @app.route('/gconnect', methods=['POST'])
@@ -127,8 +159,6 @@ def gconnect():
     return output
 
 # User Helper Functions
-
-
 def createUser(login_session):
     newUser = Student(name=login_session['username'], email=login_session[
                    'email'], picture=login_session['picture'])
@@ -151,7 +181,17 @@ def getUserID(email):
         return None
 
 # DISCONNECT - Revoke a current user's token and reset their login_session
-
+@app.route('/logout')
+def disconnect():
+    gdisconnect()
+    del login_session['gplus_id']
+    # Finish cleaning out the login_session
+    del login_session['access_token']
+    del login_session['username']
+    del login_session['email']
+    del login_session['picture']
+    flash("You have been successfully logged out.")
+    return redirect(url_for('homepage'))
 
 @app.route('/gdisconnect')
 def gdisconnect():
