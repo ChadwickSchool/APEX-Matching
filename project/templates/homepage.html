@@ -78,8 +78,13 @@
       <h1>APEX Group Preferences</h1>
       <p>No</p>
       <hr>
-      <h3>Test</h3>
-      <p>No</p>
+      <h3>Choices</h3>
+      <form>
+        {% for project in projects %}
+          <input type="radio" name="project" value="{{project.name}}">{{project.name}}<br>
+        {% endfor %}
+
+      </form>
     </div>
     <div class="col-sm-2 sidenav">
       <div class="well">

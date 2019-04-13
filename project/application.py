@@ -24,6 +24,12 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
+@app.route('/')
+@app.route('/home')
+def homepage():
+    projects = session.query(Project).all()
+    return render_template('homepage.html', projects=projects)
+
 @app.route('/login')
 def showLogin():
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
@@ -133,13 +139,13 @@ def createUser(login_session):
 
 
 def getUserInfo(user_id):
-    user = session.query(User).filter_by(id=user_id).one()
+    user = session.query(Student).filter_by(id=user_id).one()
     return user
 
 
 def getUserID(email):
     try:
-        user = session.query(User).filter_by(email=email).one()
+        user = session.query(Student).filter_by(email=email).one()
         return user.id
     except:
         return None
@@ -167,14 +173,6 @@ def gdisconnect():
         response = make_response(json.dumps('Failed to revoke token for given user.', 400))
         response.headers['Content-Type'] = 'application/json'
         return response
-
-
-
-
-@app.route('/')
-@app.route('/home')
-def homepage():
-    return render_template('homepage.html')
 
 
 @app.route('/student/<int:ID>/')

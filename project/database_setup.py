@@ -19,6 +19,7 @@ class Project(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(500))
     stud_name = Column(String(32))
+    session_number = Column(Integer, nullable=False)
     raw_score = Column(Integer, nullable=True)
     pop_score = Column(Integer, nullable=True)
     room_number = Column(Integer, nullable=True)
