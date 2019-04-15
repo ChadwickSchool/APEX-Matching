@@ -13,7 +13,8 @@ from flask import make_response
 import requests
 
 
-app = Flask(__name__)
+application = Flask(__name__)
+application.config['SECRET_KEY'] = 'super_secret_key'
 
 # CLIENT_ID = json.loads(open('client_secrets.json', 'r').read())['web']['client_id']
 APPLICATION_NAME = "APEX Matching Project"
@@ -31,8 +32,8 @@ CHOICES = {
     'choice4': 4
 }
 
-@app.route('/', methods=['POST', 'GET'])
-@app.route('/home', methods=['POST', 'GET'])
+@application.route('/', methods=['POST', 'GET'])
+@application.route('/home', methods=['POST', 'GET'])
 def homepage():
     if request.method == 'POST':
         result = request.form
@@ -45,7 +46,7 @@ def homepage():
     flash("Welcome")
     return render_template('homepage.html', projects=projects)
 
-@app.route('/rank_choices', methods=['POST'])
+@application.route('/rank_choices', methods=['POST'])
 def rank_choices():
     create_preferences(request.form.items())
     flash("Your preferences have been saved")
@@ -61,7 +62,7 @@ def create_preferences(ranked_projects):
 
 
 
-@app.route('/login')
+@application.route('/login')
 def showLogin():
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
         for x in xrange(32))
@@ -69,7 +70,7 @@ def showLogin():
     print state
     return render_template('login.html', STATE=state)
 
-@app.route('/gconnect', methods=['POST'])
+@application.route('/gconnect', methods=['POST'])
 def gconnect():
     CLIENT_ID = json.loads(
         open('client_secrets.json', 'r').read())['web']['client_id']
@@ -110,7 +111,7 @@ def gconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
 
-    # Verify that the access token is valid for this app.
+    # Verify that the access token is valid for this application.
     if result['issued_to'] != CLIENT_ID:
         response = make_response(
             json.dumps("Token's client ID does not match app's."), 401)
@@ -181,7 +182,7 @@ def getUserID(email):
         return None
 
 # DISCONNECT - Revoke a current user's token and reset their login_session
-@app.route('/logout')
+@application.route('/logout')
 def disconnect():
     gdisconnect()
     del login_session['gplus_id']
@@ -193,7 +194,7 @@ def disconnect():
     flash("You have been successfully logged out.")
     return redirect(url_for('homepage'))
 
-@app.route('/gdisconnect')
+@application.route('/gdisconnect')
 def gdisconnect():
     # Only disconnect a connected user.
     access_token = login_session.get('access_token')
@@ -215,7 +216,7 @@ def gdisconnect():
         return response
 
 
-@app.route('/student/<int:ID>/')
+@application.route('/student/<int:ID>/')
 def showStudent(ID, sesh):
     student = sesh.query(Student).filter_by(id=ID).one()
     prefs = sesh.query(Pref).filter_by(student_id=ID).all()
@@ -227,7 +228,7 @@ def showStudent(ID, sesh):
                 }
     return student_info
 
-# @app.route('/student/<int:ID>')
+# @application.route('/student/<int:ID>')
 # def showStudentPref(ID, sesh):
 #     preferences = sesh.query(Preference).filter_by(student_id=ID).all()
 #     preferences_all = list()
@@ -236,7 +237,7 @@ def showStudent(ID, sesh):
 #         preferences_all.append(preference_name)
 #     return preferences_all
 
-@app.route('/students')
+@application.route('/students')
 def showStudents(sesh):
     students = sesh.query(Student).all()
     students_all = list()
@@ -246,7 +247,7 @@ def showStudents(sesh):
         students_all.append(student_info)
     return students_all
 
-@app.route('/student/new/', methods=['GET', 'POST'])
+@application.route('/student/new/', methods=['GET', 'POST'])
 def newStudent(stud_name, sesh, pref1_proj_name = None, pref2_proj_name = None, pref3_proj_name = None, pref4_proj_name = None):
 
     stud = Student(first_name=stud_name, matched=0)
@@ -265,7 +266,7 @@ def newStudent(stud_name, sesh, pref1_proj_name = None, pref2_proj_name = None, 
     session.commit()
 
 
-# @app.route('/student/<int:ID>/edit', methods=['GET', 'POST'])
+# @application.route('/student/<int:ID>/edit', methods=['GET', 'POST'])
 # def editStudent(ID):
 #     session = DBSession()
 #     editedStudent = session.query(Student).filter_by(id=ID).one()
@@ -279,7 +280,7 @@ def newStudent(stud_name, sesh, pref1_proj_name = None, pref2_proj_name = None, 
 #         return "it worked"
 #         # return render_template('editUniverse.html', universe=editedUniverse)
 #
-# @app.route('/student/<int:ID>/delete', methods=['GET', 'POST'])
+# @application.route('/student/<int:ID>/delete', methods=['GET', 'POST'])
 # def deleteStudent(ID):
 #     session = DBSession()
 #     studentToDelete = session.query(Student).filter_by(id=ID).one()
@@ -293,7 +294,7 @@ def newStudent(stud_name, sesh, pref1_proj_name = None, pref2_proj_name = None, 
 #     else:
 #         return "it worked"
 #
-# @app.route('/disconnect')
+# @application.route('/disconnect')
 # def disconnect():
 #     if 'provider' in login_session:
 #         if login_session['provider'] == 'google':
@@ -315,6 +316,7 @@ def newStudent(stud_name, sesh, pref1_proj_name = None, pref2_proj_name = None, 
 
 
 if __name__ == '__main__':
-    app.secret_key = 'super_secret_key'
-    app.debug = True
-    app.run(host='0.0.0.0', port=8000)
+    application.secret_key = 'super_secret_key'
+    application.debug = True
+    application.run()
+    # application.run(host='0.0.0.0', port=8000)
