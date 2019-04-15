@@ -1,5 +1,5 @@
 import sys
-from sqlalchemy import Table, Column, ForeignKey, Integer, String
+from sqlalchemy import Table, Column, ForeignKey, Integer, String, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, relationship, backref
@@ -41,6 +41,7 @@ class Student(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(100), nullable=False)
     email = Column(String(100), nullable=False)
+    has_chosen_projects = Column(Boolean, default=False)
     picture = Column(String(250))
     matched = Column(Integer)
     projects = relationship('Project', secondary=project_student_link,
