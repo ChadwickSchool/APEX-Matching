@@ -1,15 +1,22 @@
 {% extends "main.html" %}
 {% block content %}
+  <p>Please choose a preferred project from each session, then click submit</p>
+  <hr>
   <h2>Choices</h2>
-  <form action="" method="post">
-    {% for i in range(1, 5) %}
-      <h3>Session {{i}}</h3>
-      {% for project in projects %}
-        {% if project.session_number == i %}
-          <input type="radio" name="session{{i}}" value="{{project.name}}">{{project.name}}<br>
-        {% endif %}
+  <!-- <div class="row"> -->
+    <form action="" method="post">
+      {% for i in range(1, 5) %}
+        <!-- <div class="col-md-3"> -->
+          <h3>Session {{i}}</h3>
+          {% for project in projects %}
+            {% if project.session_number == i %}
+              <input type="radio" name="session{{i}}" value="{{project.name}}">{{project.name}}<br>
+            {% endif %}
+          {% endfor %}
+        <!-- </div> -->
       {% endfor %}
-    {% endfor %}
-    <input type="submit">
-  </form>
+      <input type="submit">
+    </form>
+  <!-- </div> -->
+
 {% endblock %}
