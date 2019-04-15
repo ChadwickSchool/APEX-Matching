@@ -17,7 +17,8 @@ project_student_link = Table('project_student_link', Base.metadata,
 class Project(Base):
     __tablename__ = 'project'
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(32))
+    name = Column(String(250))
+    session_number = Column(Integer, nullable=False)
     stud_name = Column(String(32))
     raw_score = Column(Integer, nullable=True)
     pop_score = Column(Integer, nullable=True)
@@ -63,5 +64,5 @@ class Pref(Base):
     student = relationship(Student)
 
 
-engine = create_engine('sqlite:///database.db')
+engine = create_engine('sqlite:///testing.db')
 Base.metadata.create_all(engine)

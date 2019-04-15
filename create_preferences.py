@@ -16,14 +16,23 @@ def create_preferences(student):
     session_numbers = [1, 2, 3, 4]
     random.shuffle(session_numbers)
     pref_number = 1
-    for session_number in session_number:
+    for session_number in session_numbers:
         projects = session.query(Project).filter_by(session_number=session_number).all()
         random_project = random.choice(projects)
         pref = Pref(pref_number=pref_number, name=random_project.name, student=student)
         session.add(pref)
-        pref_number++
+        pref_number += 1
     session.commit()
-    
+
+
+def create_students():
+    for i in range(0, 300):
+        first_name, last_name = barnum.create_name()
+        student = Student(first_name=first_name, matched=0)
+        session.add(student)
+    session.commit()
+
+create_students()
 students = session.query(Student).all()
 
 for student in students:
