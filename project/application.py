@@ -48,6 +48,7 @@ CHOICES = {
 def homepage():
     if request.method == 'POST':
         result = request.form
+        login_session['chosen_projects'] = result.items()
         return render_template("rank_choices.html", chosen_projects=result.items())
     if 'username' not in login_session:
         return show_login()
@@ -58,10 +59,20 @@ def homepage():
 
 @application.route('/rank_choices', methods=['POST'])
 def rank_choices():
-    create_preferences(request.form.items())
-    flash("Your preferences have been saved")
-    return redirect(url_for('homepage'))
+    choices = request.form.items()
+    if has_no_duplicates(choices):
+        create_preferences(choices)
+        flash("Your preferences have been saved")
+        return redirect(url_for('homepage'))
+    
+    flash("Must have unique choices")
+    return render_template("rank_choices.html", chosen_projects=login_session['chosen_projects'])
 
+def has_no_duplicates(choices):
+    sessionset = set()
+    for choice in choices:
+        sessionset.add(choice[1])
+    return len(sessionset) == 4
 
 def create_preferences(ranked_projects):
     for choice_num, project_name in ranked_projects:
