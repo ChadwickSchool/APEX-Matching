@@ -1,5 +1,5 @@
 import flask
-from flask import Flask, render_template, request, redirect, jsonify, url_for, flash
+from flask import Flask, render_template, request, redirect, jsonify, url_for, flash, send_file
 from sqlalchemy import create_engine, asc, desc
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Student, engine, Project, Pref
@@ -81,6 +81,9 @@ def create_preferences(ranked_projects):
         session.add(preference)
     session.commit()
 
+@application.route('/database')
+def get_database():
+    return send_file('./database.db')
 
 @application.route('/login')
 def show_login():
