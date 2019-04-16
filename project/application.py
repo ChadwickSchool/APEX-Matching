@@ -13,8 +13,18 @@ import json
 from flask import make_response
 import requests
 
+class ReverseProxied(object):
+    def __init__(self, app):
+        self.app = app
+
+    def __call__(self, environ, start_response):
+        scheme = environ.get('HTTP_X_FORWARDED_PROTO')
+        if scheme:
+            environ['wsgi.url_scheme'] = scheme
+        return self.app(environ, start_response)
 
 application = Flask(__name__)
+application.wsgi_app = ReverseProxied(application.wsgi_app)
 application.config['SECRET_KEY'] = 'super_secret_key'
 
 # CLIENT_ID = json.loads(open('client_secrets.json', 'r').read())['web']['client_id']
@@ -35,7 +45,6 @@ CHOICES = {
 
 
 @application.route('/', methods=['POST', 'GET'])
-@application.route('/home', methods=['POST', 'GET'])
 def homepage():
     if request.method == 'POST':
         result = request.form

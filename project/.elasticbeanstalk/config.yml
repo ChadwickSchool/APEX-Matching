@@ -2,6 +2,10 @@ branch-defaults:
   default:
     environment: apex-matching
     group_suffix: null
+environment-defaults:
+  apex-matching:
+    branch: null
+    repository: null
 global:
   application_name: apex-matching
   branch: null
