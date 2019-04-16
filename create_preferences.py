@@ -28,7 +28,7 @@ def create_preferences(student):
 def create_students():
     for i in range(0, 300):
         first_name, last_name = barnum.create_name()
-        student = Student(first_name=first_name, matched=0)
+        student = Student(name=first_name+ ' ' + last_name, email=barnum.create_email(name=(first_name, last_name)), matched=0)
         session.add(student)
     session.commit()
 
