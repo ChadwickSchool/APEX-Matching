@@ -30,8 +30,9 @@ application.config['SECRET_KEY'] = 'super_secret_key'
 # CLIENT_ID = json.loads(open('client_secrets.json', 'r').read())['web']['client_id']
 APPLICATION_NAME = "APEX Matching Project"
 
-engine = create_engine('mysql+pymysql://chadwick:godolphins@apex-matching.c0plu8oomro4.us-east-2.rds.amazonaws.com:3306/testdb')
+# engine = create_engine('mysql+pymysql://chadwick:godolphins@apex-matching.c0plu8oomro4.us-east-2.rds.amazonaws.com:3306/testdb')
 # engine = create_engine('sqlite:///database.db?check_same_thread=false')
+engine = create_engine('mysql+pymysql://chadwick:godolphins@apex-matching2.c0plu8oomro4.us-east-2.rds.amazonaws.com:3306/production')
 Base.metadata.bind = engine
 
 session_factory = sessionmaker(bind=engine)
@@ -50,8 +51,11 @@ def homepage():
     session = DBSession()
     if request.method == 'POST':
         result = request.form
-        login_session['chosen_projects'] = result.items()
-        return render_template("rank_choices.html", chosen_projects=result.items())
+        if not verify_choices(result.items()):
+            flash("You must select a project from each session")
+        else:
+            login_session['chosen_projects'] = result.items()
+            return render_template("rank_choices.html", chosen_projects=result.items())
     if 'username' not in login_session:
         return show_login()
     
@@ -59,6 +63,7 @@ def homepage():
     if user is None:
         return show_login()
     preferences = session.query(Pref).filter_by(student_id=user.id).order_by(Pref.pref_number).all()
+    
     if user.has_chosen_projects:
         return render_template('student.html', preferences=preferences)
     projects = session.query(Project).all()
@@ -70,9 +75,7 @@ def homepage():
 def rank_choices():
     choices = request.form.items()
     if verify_choices(choices):
-        create_preferences(choices)
-        flash("Your preferences have been saved")
-        return redirect(url_for('homepage'))
+        return create_preferences(choices)
     
     flash("Must have unique choices")
     return render_template("rank_choices.html", chosen_projects=login_session['chosen_projects'])
@@ -88,11 +91,18 @@ def create_preferences(ranked_projects):
     user = get_user_by_email(login_session['email'])
     user.has_chosen_projects = True
     session.add(user)
-    for choice_num, project_name in ranked_projects:
+    preferences = []
+    for choice_num, project_name in sorted(ranked_projects, key=get_key):
         preference = Pref(pref_number=CHOICES[choice_num], name=project_name, student_id=get_user_id(
             login_session['email']))
         session.add(preference)
+        preferences.append(preference)
     session.commit()
+    flash("Your preferences have been saved")
+    return render_template('student.html', preferences=preferences)
+
+def get_key(item):
+    return item[0]
 
 @application.route('/database')
 def get_database():
@@ -102,7 +112,6 @@ def get_database():
 def show_preferences():
     session = DBSession()
     preferences = session.query(Pref).all()
-    print preferences
     if preferences is not None:
         user = get_user_by_email(login_session['email'])
         user.has_chosen_projects = True
@@ -165,7 +174,6 @@ def gconnect():
     if result['issued_to'] != CLIENT_ID:
         response = make_response(
             json.dumps("Token's client ID does not match app's."), 401)
-        print "Token's client ID does not match app's."
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -205,7 +213,6 @@ def gconnect():
     output += login_session['picture']
     output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
     flash("you are now logged in as %s" % login_session['username'])
-    print "done!"
     return output
 
 # User Helper Functions
