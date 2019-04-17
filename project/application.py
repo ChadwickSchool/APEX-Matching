@@ -60,7 +60,7 @@ def homepage():
 @application.route('/rank_choices', methods=['POST'])
 def rank_choices():
     choices = request.form.items()
-    if has_no_duplicates(choices):
+    if verify_choices(choices):
         create_preferences(choices)
         flash("Your preferences have been saved")
         return redirect(url_for('homepage'))
@@ -68,7 +68,7 @@ def rank_choices():
     flash("Must have unique choices")
     return render_template("rank_choices.html", chosen_projects=login_session['chosen_projects'])
 
-def has_no_duplicates(choices):
+def verify_choices(choices):
     sessionset = set()
     for choice in choices:
         sessionset.add(choice[1])
