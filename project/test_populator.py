@@ -3,7 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Student, engine, Pref, Project
 
-ENGINE = create_engine('sqlite:///database.db')
+ENGINE = create_engine('mysql+pymysql://chadwick:godolphins@apex-matching.c0plu8oomro4.us-east-2.rds.amazonaws.com:3306/testdb')
 Base.metadata.bind = ENGINE
 DBSESSION = sessionmaker(bind=ENGINE)
 session = DBSESSION()
