@@ -54,9 +54,9 @@ class Student(Base):
     def serialize(self):
         return {
             'id': self.id,
-            'first_name': self.first_name,
-            'last_name': self.last_name,
-            'projects': [project.serialize for project in self.projects]
+            'name': self.name,
+            'email': self.email,
+            'has_chosen_projects': self.has_chosen_projects
         }
 
 
@@ -72,6 +72,8 @@ class Pref(Base):
 
 engine = create_engine('sqlite:///database.db')
 
-# engine = create_engine('mysql+pymysql://chadwick:godolphins@apex-matching.c0plu8oomro4.us-east-2.rds.amazonaws.com:3306/testdb')
+# test = create_engine('mysql+pymysql://chadwick:godolphins@apex-matching.c0plu8oomro4.us-east-2.rds.amazonaws.com:3306/testdb')
+
+# engine = create_engine('mysql+pymysql://chadwick:godolphins@apex-matching2.c0plu8oomro4.us-east-2.rds.amazonaws.com:3306/production')
 
 Base.metadata.create_all(engine)
