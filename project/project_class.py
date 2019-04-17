@@ -6,6 +6,8 @@ class Project_class:
         project.students = students
         project.raw_score = raw_score
         project.pop_score = popularity_score
+        project.num_studs = len(students)
+
 
     def __eq__(self, other):
         '''overrides default equals for project class'''

@@ -18,7 +18,7 @@ class Project(Base):
     __tablename__ = 'project'
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(500))
-    stud_name = Column(String(32))
+    stud_name = Column(String(32), nullable=True)
     session_number = Column(Integer, nullable=False)
     raw_score = Column(Integer, nullable=True)
     pop_score = Column(Integer, nullable=True)
@@ -43,7 +43,10 @@ class Student(Base):
     email = Column(String(100), nullable=False)
     has_chosen_projects = Column(Boolean, default=False)
     picture = Column(String(250))
-    matched = Column(Integer)
+    session_1_matched = Column(Boolean, default=False)
+    session_2_matched = Column(Boolean, default=False)
+    session_3_matched = Column(Boolean, default=False)
+    session_4_matched = Column(Boolean, default=False)
     projects = relationship('Project', secondary=project_student_link,
                             back_populates='students')
 
@@ -67,5 +70,5 @@ class Pref(Base):
     student = relationship(Student)
 
 
-engine = create_engine('sqlite:///database.db')
+engine = create_engine('sqlite:///testing.db')
 Base.metadata.create_all(engine)

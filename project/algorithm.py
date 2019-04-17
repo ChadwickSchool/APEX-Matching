@@ -8,14 +8,14 @@ from project_class import Project_class
 
 
 APP = Flask(__name__)
-ENGINE = create_engine('sqlite:///database.db')
+ENGINE = create_engine('sqlite:///testing.db')
 Base.metadata.bind = engine
 DBSESSION = sessionmaker(bind=engine)
 SESSION = DBSESSION()
 
 NUMBER_OF_PREFS = 4
-MAX_STUDS_PER_GROUP = 20
-MIN_STUDS_PER_GROUP = 10
+MAX_STUDS_PER_GROUP = 15
+MIN_STUDS_PER_GROUP = 7
 NUM_OF_PROJS = 25
 SESSION_1_PROJECTS = []
 SESSION_2_PROJECTS = []
@@ -35,6 +35,7 @@ def show_projects():
     return render_template('main.html', projects=PROJECTS)
 
 
+
 def clear_all_students():
     '''Sets all student's matched to 0 (not matched)'''
     students = SESSION.query(Student).all()
@@ -52,6 +53,12 @@ def get_raw_score(project):
     prefs = SESSION.query(Pref).filter_by(name=project_name).all()
     return len(prefs)
 
+# def sort_session_groups_by_number():
+#     '''
+#     makes lists of projects in order of how many students are in that group
+#     '''
+#
+
 
 def get_popularity_score(project):
     """
@@ -68,11 +75,11 @@ def get_popularity_score(project):
     return total_score
 
 
-def raw_sort(session_num):
+def raw_sort():
     """Return the names of projects in order of lowest raw score to highest"""
     projs = []
     projects = SESSION.query(Project)
-    projects = projects.filter_by(session_number=session_num).all()
+    # projects = projects.filter_by(session_number=session_num).all()
     for proj in projects:
         proj.raw_score = get_raw_score(proj)
         SESSION.add(proj)
@@ -84,11 +91,11 @@ def raw_sort(session_num):
     return projs
 
 
-def pop_sort(session_num):
+def pop_sort():
     """Return the names of projects in order of lowest pop score to highest"""
     projs = []
     projects = SESSION.query(Project)
-    projects = projects.filter_by(session_number=session_num).all()
+    # projects = projects.filter_by(session_number=session_num).all()
     for proj in projects:
         proj.pop_score = get_popularity_score(proj)
         proj.raw_score = get_raw_score(proj)
@@ -102,248 +109,495 @@ def pop_sort(session_num):
     return projs
 
 
-def get_underfilled_groups(session_num):
+def get_underfilled_groups():
     """Return the names of projects with deficient students to fill"""
     projs = []
-    projects = raw_sort(session_num)
+    projects = raw_sort()
     for proj in projects:
         project = SESSION.query(Project).filter_by(name=proj).one()
         if project.raw_score < MIN_STUDS_PER_GROUP:
             projs.append(project.name)
     return projs
 
+def print_projects():
+    print 'Session 1 Projects: '
+    print '/n'
+    for proj in SESSION_1_PROJECTS:
+        print('Project: ' + proj.proj_name)
+        print('Students: ')
+        print proj.students
+    print 'Session 2 Projects: '
+    print '/n'
+    for proj in SESSION_2_PROJECTS:
+        print('Project: ' + proj.proj_name)
+        print('Students: ')
+        print proj.students
+    print 'Session 3 Projects: '
+    print '/n'
+    for proj in SESSION_3_PROJECTS:
+        print('Project: ' + proj.proj_name)
+        print('Students: ')
+        print proj.students
+    print 'Session 4 Projects: '
+    print '/n'
+    for proj in SESSION_4_PROJECTS:
+        print('Project: ' + proj.proj_name)
+        print('Students: ')
+        print proj.students
 
-def give_all_prefs(session_num):
+
+
+def give_all_prefs():
     """Return project objects of projects with all their prefs assigned"""
     # An underfilled project is a project where the number of students that want
     # the project (raw score) is less than the minimum students per project
-    underfilled_projs_names = get_underfilled_groups(session_num)
-    for proj_name in underfilled_projs_names:
-        project = SESSION.query(Project).filter_by(name=proj_name).one()
-        prefs = SESSION.query(Pref).filter_by(name=proj_name).all()
+    underfilled_projs_names = get_underfilled_groups()
+    for project_name in underfilled_projs_names:
+        project = SESSION.query(Project).filter_by(name=project_name).one()
+        session_num = project.session_number
+        prefs = SESSION.query(Pref).filter_by(name=project_name).all()
         student_names = []
         for pref in prefs:
             student = SESSION.query(Student).filter_by(
                 id=pref.student_id).one()
-            if student.matched is False:
-                student_names.append(student.name)
-                student.matched = True
-                SESSION.add(student)
-                SESSION.commit()
+            if session_num is 1:
+                if student.session_1_matched is False:
+                    # if len(student_names) is 0:
+                    #     student_names.append(student.name)
+                    # else:
+                    #     student_names.append(student.name)
+                    student_names.append(student.name)
+                    student.session_1_matched = True
+                    SESSION.add(student)
+                    SESSION.commit()
+            if session_num is 2:
+                if student.session_2_matched is False:
+                    # if len(student_names) is 0:
+                    #     student_names.append(student.name)
+                    # else:
+                    #     student_names.append(student.name)
+                    student_names.append(student.name)
+                    student.session_2_matched = True
+                    SESSION.add(student)
+                    SESSION.commit()
+            if session_num is 3:
+                if student.session_3_matched is False:
+                    # if len(student_names) is 0:
+                    #     student_names.append(student.name)
+                    # else:
+                    #     student_names.append(student.name)
+                    student_names.append(student.name)
+                    student.session_3_matched = True
+                    SESSION.add(student)
+                    SESSION.commit()
+            if session_num is 4:
+                if student.session_4_matched is False:
+                    # if len(student_names) is 0:
+                    #     student_names.append(student.name)
+                    # else:
+                    #     student_names.append(student.name)
+                    student_names.append(student.name)
+                    student.session_4_matched = True
+                    SESSION.add(student)
+                    SESSION.commit()
         raw_score = get_raw_score(project)
         pop_score = get_popularity_score(project)
         project_obj = Project_class(
-            proj_name, student_names, raw_score, pop_score)
-        if session_num = 1:
-            SESSION_1_PROJECTS.extend(project_obj)
-        if session_num = 2:
-            SESSION_2_PROJECTS.extend(project_obj)
-        if session_num = 3:
-            SESSION_3_PROJECTS.extend(project_obj)
-        if session_num = 4:
-            SESSION_4_PROJECTS.extend(project_obj)
+            project_name, student_names, raw_score, pop_score)
+        if session_num is 1:
+            SESSION_1_PROJECTS.append(project_obj)
+        if session_num is 2:
+            SESSION_2_PROJECTS.append(project_obj)
+        if session_num is 3:
+            SESSION_3_PROJECTS.append(project_obj)
+        if session_num is 4:
+            SESSION_4_PROJECTS.append(project_obj)
     return "it worked"
 
 
-def give_first_prefs(session_num):
+def give_first_prefs():
     """
     Return the project objects of projects with just their first prefs assigned
     """
-    proj_names = pop_sort(session_num)
-    for proj_name in proj_names:
-        project = SESSION.query(Project).filter_by(name=proj_name).one()
-        prefs = SESSION.query(Pref).filter_by(name=proj_name)
+    proj_names = pop_sort()
+    for project_name in proj_names:
+        project = SESSION.query(Project).filter_by(name=project_name).one()
+        session_num = project.session_number
+        prefs = SESSION.query(Pref).filter_by(name=project_name)
         prefs = prefs.filter_by(pref_number=1).all()
         student_names = []
-        i = 0
+        studs_in_proj = 0
         for pref in prefs:
             student = SESSION.query(Student).filter_by(
                 id=pref.student_id).one()
-            if student.matched is False:
-                if i < MAX_STUDS_PER_GROUP:
-                    student_names.append(student.name)
-                    student.matched = True
-                    SESSION.add(student)
-                    SESSION.commit()
-                    i = i + 1
+            if session_num is 1:
+                if student.session_1_matched is False:
+                    if studs_in_proj < MAX_STUDS_PER_GROUP:
+                        student_names.append(student.name)
+                        student.session_1_matched = True
+                        SESSION.add(student)
+                        SESSION.commit()
+                        studs_in_proj = studs_in_proj + 1
+            if session_num is 2:
+                if student.session_2_matched is False:
+                    if studs_in_proj < MAX_STUDS_PER_GROUP:
+                        student_names.append(student.name)
+                        student.session_2_matched = True
+                        SESSION.add(student)
+                        SESSION.commit()
+                        studs_in_proj = studs_in_proj + 1
+            if session_num is 3:
+                if student.session_3_matched is False:
+                    if studs_in_proj < MAX_STUDS_PER_GROUP:
+                        student_names.append(student.name)
+                        student.session_3_matched = True
+                        SESSION.add(student)
+                        SESSION.commit()
+                        studs_in_proj = studs_in_proj + 1
+            if session_num is 4:
+                if student.session_4_matched is False:
+                    if studs_in_proj < MAX_STUDS_PER_GROUP:
+                        student_names.append(student.name)
+                        student.session_4_matched = True
+                        SESSION.add(student)
+                        SESSION.commit()
+                        studs_in_proj = studs_in_proj + 1
         raw_score = get_raw_score(project)
         pop_score = get_popularity_score(project)
-        project_obj = Project_class(proj, student_names, raw_score, pop_score)
-        if session_num = 1:
-            SESSION_1_PROJECTS.extend(project_obj)
-        if session_num = 2:
-            SESSION_2_PROJECTS.extend(project_obj)
-        if session_num = 3:
-            SESSION_3_PROJECTS.extend(project_obj)
-        if session_num = 4:
-            SESSION_4_PROJECTS.extend(project_obj)
+        project_obj = Project_class(project_name, student_names, raw_score, pop_score)
+        if session_num is 1:
+            SESSION_1_PROJECTS.append(project_obj)
+        if session_num is 2:
+            SESSION_2_PROJECTS.append(project_obj)
+        if session_num is 3:
+            SESSION_3_PROJECTS.append(project_obj)
+        if session_num is 4:
+            SESSION_4_PROJECTS.append(project_obj)
     return "it worked"
 
 
-def give_second_prefs(session_num):
+def give_second_prefs():
     """
     Return the project objects of projects with their second prefs assigned
     """
-    if session_num is 1:
-        for proj in SESSION_1_PROJECTS:
-            prefs = SESSION.query(Pref).filter_by(pref_number=2).all()
-            for pref in prefs:
-                student = SESSION.query(Student).filter_by(
-                    id=pref.student_id).one()
-                if student.matched is False and pref.name is proj.proj_name and len(proj.students) < MAX_STUDS_PER_GROUP:
-                    proj.students.extend(student.name)
-                    student.matched = True
+    SESSION_1_PROJECTS.sort(key=lambda Project: Project.num_studs, reverse=False)
+    for proj in SESSION_1_PROJECTS:
+        project_name = proj.proj_name
+        project = SESSION.query(Project).filter_by(name=project_name).one()
+        session_num = project.session_number
+        prefs = SESSION.query(Pref).filter_by(name=project_name)
+        prefs = prefs.filter_by(pref_number=2).all()
+        student_names = []
+        for pref in prefs:
+            studs_in_proj = proj.num_studs
+            student = SESSION.query(Student).filter_by(
+                id=pref.student_id).one()
+            if student.session_1_matched is False:
+                if studs_in_proj < MAX_STUDS_PER_GROUP:
+                    student_names.append(student.name)
+                    student.session_1_matched = True
                     SESSION.add(student)
                     SESSION.commit()
-    if session_num is 2:
-        for proj in SESSION_2_PROJECTS:
-            prefs = SESSION.query(Pref).filter_by(pref_number=2).all()
-            for pref in prefs:
-                student = SESSION.query(Student).filter_by(
-                    id=pref.student_id).one()
-                if student.matched is False and pref.name is proj.proj_name and len(proj.students) < MAX_STUDS_PER_GROUP:
-                    proj.students.extend(student.name)
-                    student.matched = True
-                    SESSION.add(student)
-                    SESSION.commit()
-    if session_num is 3:
-        for proj in SESSION_3_PROJECTS:
-            prefs = SESSION.query(Pref).filter_by(pref_number=2).all()
-            for pref in prefs:
-                student = SESSION.query(Student).filter_by(
-                    id=pref.student_id).one()
-                if student.matched is False and pref.name is proj.proj_name and len(proj.students) < MAX_STUDS_PER_GROUP:
-                    proj.students.extend(student.name)
-                    student.matched = True
-                    SESSION.add(student)
-                    SESSION.commit()
-    if session_num is 4:
-        for proj in SESSION_4_PROJECTS:
-            prefs = SESSION.query(Pref).filter_by(pref_number=2).all()
-            for pref in prefs:
-                student = SESSION.query(Student).filter_by(
-                    id=pref.student_id).one()
-                if student.matched is False and pref.name is proj.proj_name and len(proj.students) < MAX_STUDS_PER_GROUP:
-                    proj.students.extend(student.name)
-                    student.matched = True
-                    SESSION.add(student)
-                    SESSION.commit()
-    return "it worked"
+                    if len(proj.students) is 0:
+                        proj.students.append(student.name)
+                    else:
+                        proj.students.append(student.name)
 
+    SESSION_2_PROJECTS.sort(key=lambda Project: Project.num_studs, reverse=False)
+    for proj in SESSION_2_PROJECTS:
+        project_name = proj.proj_name
+        project = SESSION.query(Project).filter_by(name=project_name).one()
+        session_num = project.session_number
+        prefs = SESSION.query(Pref).filter_by(name=project_name)
+        prefs = prefs.filter_by(pref_number=2).all()
+        student_names = []
+        for pref in prefs:
+            studs_in_proj = proj.num_studs
+            student = SESSION.query(Student).filter_by(
+                id=pref.student_id).one()
+            if student.session_2_matched is False:
+                if studs_in_proj < MAX_STUDS_PER_GROUP:
+                    student_names.append(student.name)
+                    student.session_2_matched = True
+                    SESSION.add(student)
+                    SESSION.commit()
+                    if len(proj.students) is 0:
+                        proj.students.append(student.name)
+                    else:
+                        proj.students.append(student.name)
 
-def give_third_prefs(session_num):
+    SESSION_3_PROJECTS.sort(key=lambda Project: Project.num_studs, reverse=False)
+    for proj in SESSION_3_PROJECTS:
+        project_name = proj.proj_name
+        project = SESSION.query(Project).filter_by(name=project_name).one()
+        session_num = project.session_number
+        prefs = SESSION.query(Pref).filter_by(name=project_name)
+        prefs = prefs.filter_by(pref_number=2).all()
+        student_names = []
+        for pref in prefs:
+            studs_in_proj = proj.num_studs
+            student = SESSION.query(Student).filter_by(
+                id=pref.student_id).one()
+            if student.session_3_matched is False:
+                if studs_in_proj < MAX_STUDS_PER_GROUP:
+                    student_names.append(student.name)
+                    student.session_3_matched = True
+                    SESSION.add(student)
+                    SESSION.commit()
+                    if len(proj.students) is 0:
+                        proj.students.append(student.name)
+                    else:
+                        proj.students.append(student.name)
+
+    SESSION_4_PROJECTS.sort(key=lambda Project: Project.num_studs, reverse=False)
+    for proj in SESSION_4_PROJECTS:
+        project_name = proj.proj_name
+        project = SESSION.query(Project).filter_by(name=project_name).one()
+        session_num = project.session_number
+        prefs = SESSION.query(Pref).filter_by(name=project_name)
+        prefs = prefs.filter_by(pref_number=2).all()
+        student_names = []
+        for pref in prefs:
+            studs_in_proj = proj.num_studs
+            student = SESSION.query(Student).filter_by(
+                id=pref.student_id).one()
+            if student.session_4_matched is False:
+                if studs_in_proj < MAX_STUDS_PER_GROUP:
+                    student_names.append(student.name)
+                    student.session_4_matched = True
+                    SESSION.add(student)
+                    SESSION.commit()
+                    if len(proj.students) is 0:
+                        proj.students.append(student.name)
+                    else:
+                        proj.students.append(student.name)
+
+def give_third_prefs():
     """
-    Return the project objects of projects with their third prefs assigned
+    Return the project objects of projects with their second prefs assigned
     """
-    if session_num is 1:
-        for proj in SESSION_1_PROJECTS:
-            prefs = SESSION.query(Pref).filter_by(pref_number=3).all()
-            for pref in prefs:
-                student = SESSION.query(Student).filter_by(
-                    id=pref.student_id).one()
-                if student.matched is False and pref.name is proj.proj_name and len(proj.students) < MAX_STUDS_PER_GROUP:
-                    proj.students.extend(student.name)
-                    student.matched = True
+    SESSION_1_PROJECTS.sort(key=lambda Project: Project.num_studs, reverse=False)
+    for proj in SESSION_1_PROJECTS:
+        project_name = proj.proj_name
+        project = SESSION.query(Project).filter_by(name=project_name).one()
+        session_num = project.session_number
+        prefs = SESSION.query(Pref).filter_by(name=project_name)
+        prefs = prefs.filter_by(pref_number=3).all()
+        student_names = []
+        for pref in prefs:
+            studs_in_proj = proj.num_studs
+            student = SESSION.query(Student).filter_by(
+                id=pref.student_id).one()
+            if student.session_1_matched is False:
+                if studs_in_proj < MAX_STUDS_PER_GROUP:
+                    student_names.append(student.name)
+                    student.session_1_matched = True
                     SESSION.add(student)
                     SESSION.commit()
-    if session_num is 2:
-        for proj in SESSION_2_PROJECTS:
-            prefs = SESSION.query(Pref).filter_by(pref_number=3).all()
-            for pref in prefs:
-                student = SESSION.query(Student).filter_by(
-                    id=pref.student_id).one()
-                if student.matched is False and pref.name is proj.proj_name and len(proj.students) < MAX_STUDS_PER_GROUP:
-                    proj.students.extend(student.name)
-                    student.matched = True
+                    if len(proj.students) is 0:
+                        proj.students.append(student.name)
+                    else:
+                        proj.students.append(student.name)
+    SESSION_2_PROJECTS.sort(key=lambda Project: Project.num_studs, reverse=False)
+    for proj in SESSION_2_PROJECTS:
+        project_name = proj.proj_name
+        project = SESSION.query(Project).filter_by(name=project_name).one()
+        session_num = project.session_number
+        prefs = SESSION.query(Pref).filter_by(name=project_name)
+        prefs = prefs.filter_by(pref_number=3).all()
+        student_names = []
+        for pref in prefs:
+            studs_in_proj = proj.num_studs
+            student = SESSION.query(Student).filter_by(
+                id=pref.student_id).one()
+            if student.session_2_matched is False:
+                if studs_in_proj < MAX_STUDS_PER_GROUP:
+                    student_names.append(student.name)
+                    student.session_2_matched = True
                     SESSION.add(student)
                     SESSION.commit()
-    if session_num is 3:
-        for proj in SESSION_3_PROJECTS:
-            prefs = SESSION.query(Pref).filter_by(pref_number=3).all()
-            for pref in prefs:
-                student = SESSION.query(Student).filter_by(
-                    id=pref.student_id).one()
-                if student.matched is False and pref.name is proj.proj_name and len(proj.students) < MAX_STUDS_PER_GROUP:
-                    proj.students.extend(student.name)
-                    student.matched = True
+                    if len(proj.students) is 0:
+                        proj.students.append(student.name)
+                    else:
+                        proj.students.append(student.name)
+
+    SESSION_3_PROJECTS.sort(key=lambda Project: Project.num_studs, reverse=False)
+    for proj in SESSION_3_PROJECTS:
+        project_name = proj.proj_name
+        project = SESSION.query(Project).filter_by(name=project_name).one()
+        session_num = project.session_number
+        prefs = SESSION.query(Pref).filter_by(name=project_name)
+        prefs = prefs.filter_by(pref_number=3).all()
+        student_names = []
+        for pref in prefs:
+            studs_in_proj = proj.num_studs
+            student = SESSION.query(Student).filter_by(
+                id=pref.student_id).one()
+            if student.session_3_matched is False:
+                if studs_in_proj < MAX_STUDS_PER_GROUP:
+                    student_names.append(student.name)
+                    student.session_3_matched = True
                     SESSION.add(student)
                     SESSION.commit()
-    if session_num is 4:
-        for proj in SESSION_4_PROJECTS:
-            prefs = SESSION.query(Pref).filter_by(pref_number=3).all()
-            for pref in prefs:
-                student = SESSION.query(Student).filter_by(
-                    id=pref.student_id).one()
-                if student.matched is False and pref.name is proj.proj_name and len(proj.students) < MAX_STUDS_PER_GROUP:
-                    proj.students.extend(student.name)
-                    student.matched = True
+                    if len(proj.students) is 0:
+                        proj.students.append(student.name)
+                    else:
+                        proj.students.append(student.name)
+
+    SESSION_4_PROJECTS.sort(key=lambda Project: Project.num_studs, reverse=False)
+    for proj in SESSION_4_PROJECTS:
+        project_name = proj.proj_name
+        project = SESSION.query(Project).filter_by(name=project_name).one()
+        session_num = project.session_number
+        prefs = SESSION.query(Pref).filter_by(name=project_name)
+        prefs = prefs.filter_by(pref_number=3).all()
+        student_names = []
+        for pref in prefs:
+            studs_in_proj = proj.num_studs
+            student = SESSION.query(Student).filter_by(
+                id=pref.student_id).one()
+            if student.session_4_matched is False:
+                if studs_in_proj < MAX_STUDS_PER_GROUP:
+                    student_names.append(student.name)
+                    student.session_4_matched = True
                     SESSION.add(student)
                     SESSION.commit()
-    return "it worked"
+                    if len(proj.students) is 0:
+                        proj.students.append(student.name)
+                    else:
+                        proj.students.append(student.name)
 
 
-def give_fourth_prefs(session_num):
+def give_fourth_prefs():
     """
-    Return the project objects of projects with just their fourth prefs assigned
+    Return the project objects of projects with their fourth prefs assigned
     """
-    if session_num is 1:
-        for proj in SESSION_1_PROJECTS:
-            prefs = SESSION.query(Pref).filter_by(pref_number=4).all()
-            for pref in prefs:
-                student = SESSION.query(Student).filter_by(
-                    id=pref.student_id).one()
-                if student.matched is False and pref.name is proj.proj_name and len(proj.students) < MAX_STUDS_PER_GROUP:
-                    proj.students.extend(student.name)
-                    student.matched = True
+    SESSION_1_PROJECTS.sort(key=lambda Project: Project.num_studs, reverse=False)
+    for proj in SESSION_1_PROJECTS:
+        project_name = proj.proj_name
+        project = SESSION.query(Project).filter_by(name=project_name).one()
+        session_num = project.session_number
+        prefs = SESSION.query(Pref).filter_by(name=project_name)
+        prefs = prefs.filter_by(pref_number=4).all()
+        student_names = []
+        for pref in prefs:
+            studs_in_proj = proj.num_studs
+            student = SESSION.query(Student).filter_by(
+                id=pref.student_id).one()
+            if student.session_1_matched is False:
+                if studs_in_proj < MAX_STUDS_PER_GROUP:
+                    student_names.append(student.name)
+                    student.session_1_matched = True
                     SESSION.add(student)
                     SESSION.commit()
-    if session_num is 2:
-        for proj in SESSION_2_PROJECTS:
-            prefs = SESSION.query(Pref).filter_by(pref_number=4).all()
-            for pref in prefs:
-                student = SESSION.query(Student).filter_by(
-                    id=pref.student_id).one()
-                if student.matched is False and pref.name is proj.proj_name and len(proj.students) < MAX_STUDS_PER_GROUP:
-                    proj.students.extend(student.name)
-                    student.matched = True
-                    SESSION.add(student)
-                    SESSION.commit()
-    if session_num is 3:
-        for proj in SESSION_3_PROJECTS:
-            prefs = SESSION.query(Pref).filter_by(pref_number=4).all()
-            for pref in prefs:
-                student = SESSION.query(Student).filter_by(
-                    id=pref.student_id).one()
-                if student.matched is False and pref.name is proj.proj_name and len(proj.students) < MAX_STUDS_PER_GROUP:
-                    proj.students.extend(student.name)
-                    student.matched = True
-                    SESSION.add(student)
-                    SESSION.commit()
-    if session_num is 4:
-        for proj in SESSION_4_PROJECTS:
-            prefs = SESSION.query(Pref).filter_by(pref_number=4).all()
-            for pref in prefs:
-                student = SESSION.query(Student).filter_by(
-                    id=pref.student_id).one()
-                if student.matched is False and pref.name is proj.proj_name and len(proj.students) < MAX_STUDS_PER_GROUP:
-                    proj.students.extend(student.name)
-                    student.matched = True
-                    SESSION.add(student)
-                    SESSION.commit()
-    return "it worked"
+                    if len(proj.students) is 0:
+                        proj.students.append(student.name)
+                    else:
+                        proj.students.append(student.name)
 
+    SESSION_2_PROJECTS.sort(key=lambda Project: Project.num_studs, reverse=False)
+    for proj in SESSION_2_PROJECTS:
+        project_name = proj.proj_name
+        project = SESSION.query(Project).filter_by(name=project_name).one()
+        session_num = project.session_number
+        prefs = SESSION.query(Pref).filter_by(name=project_name)
+        prefs = prefs.filter_by(pref_number=4).all()
+        student_names = []
+        for pref in prefs:
+            studs_in_proj = proj.num_studs
+            student = SESSION.query(Student).filter_by(
+                id=pref.student_id).one()
+            if student.session_2_matched is False:
+                if studs_in_proj < MAX_STUDS_PER_GROUP:
+                    student_names.append(student.name)
+                    student.session_2_matched = True
+                    SESSION.add(student)
+                    SESSION.commit()
+                    if len(proj.students) is 0:
+                        proj.students.append(student.name)
+                    else:
+                        proj.students.append(student.name)
+
+    SESSION_3_PROJECTS.sort(key=lambda Project: Project.num_studs, reverse=False)
+    for proj in SESSION_3_PROJECTS:
+        project_name = proj.proj_name
+        project = SESSION.query(Project).filter_by(name=project_name).one()
+        session_num = project.session_number
+        prefs = SESSION.query(Pref).filter_by(name=project_name)
+        prefs = prefs.filter_by(pref_number=4).all()
+        student_names = []
+        for pref in prefs:
+            studs_in_proj = proj.num_studs
+            student = SESSION.query(Student).filter_by(
+                id=pref.student_id).one()
+            if student.session_3_matched is False:
+                if studs_in_proj < MAX_STUDS_PER_GROUP:
+                    student_names.append(student.name)
+                    student.session_3_matched = True
+                    SESSION.add(student)
+                    SESSION.commit()
+                    if len(proj.students) is 0:
+                        proj.students.append(student.name)
+                    else:
+                        proj.students.append(student.name)
+
+    SESSION_4_PROJECTS.sort(key=lambda Project: Project.num_studs, reverse=False)
+    for proj in SESSION_4_PROJECTS:
+        project_name = proj.proj_name
+        project = SESSION.query(Project).filter_by(name=project_name).one()
+        session_num = project.session_number
+        prefs = SESSION.query(Pref).filter_by(name=project_name)
+        prefs = prefs.filter_by(pref_number=4).all()
+        student_names = []
+        for pref in prefs:
+            studs_in_proj = proj.num_studs
+            student = SESSION.query(Student).filter_by(
+                id=pref.student_id).one()
+            if student.session_4_matched is False:
+                if studs_in_proj < MAX_STUDS_PER_GROUP:
+                    student_names.append(student.name)
+                    student.session_4_matched = True
+                    SESSION.add(student)
+                    SESSION.commit()
+                    if len(proj.students) is 0:
+                        proj.students.append(student.name)
+                    else:
+                        proj.students.append(student.name)
 
 def get_unmatched_students():
     """Return students that are unmatched in a project called Not Matched"""
-    students = SESSION.query(Student).filter_by(matched=0).all()
+    students = SESSION.query(Student).filter_by(session_1_matched=False).all()
+    studs = []
+    for student in students:
+        print student.name
+        studs.append(student.name)
+    project_obj = Project_class('Session 1 Not Matched', studs, 0, 0)
+    SESSION_1_PROJECTS.append(project_obj)
+    students = SESSION.query(Student).filter_by(session_2_matched=False).all()
     project_objs = []
     studs = []
     for student in students:
         print student.name
         studs.append(student.name)
-    project_obj = Project_class('Not Matched', studs, 0, 0)
-    project_objs.append(project_obj)
-    return project_objs
+    project_obj = Project_class('Session 2 Not Matched', studs, 0, 0)
+    SESSION_2_PROJECTS.append(project_obj)
+    students = SESSION.query(Student).filter_by(session_3_matched=False).all()
+    project_objs = []
+    studs = []
+    for student in students:
+        print student.name
+        studs.append(student.name)
+    project_obj = Project_class('Session 3 Not Matched', studs, 0, 0)
+    SESSION_3_PROJECTS.append(project_obj)
+    students = SESSION.query(Student).filter_by(session_4_matched=False).all()
+    project_objs = []
+    studs = []
+    for student in students:
+        print student.name
+        studs.append(student.name)
+    project_obj = Project_class('Session 4 Not Matched', studs, 0, 0)
+    SESSION_4_PROJECTS.append(project_obj)
+    return 'it worked'
 
 
 def give_room_number(room_nums, session_num):
@@ -381,9 +635,15 @@ def give_room_number(room_nums, session_num):
                 SESSION.add(proj)
                 SESSION.commit()
                 n = n + 1
-
-
-if __name__ == '__main__':
-    APP.secret_key = 'super_secret_key'
-    APP.debug = True
-    APP.run(host='0.0.0.0', port=5000)
+give_all_prefs()
+give_first_prefs()
+give_second_prefs()
+give_third_prefs()
+give_fourth_prefs()
+get_unmatched_students()
+print_projects()
+#
+# if __name__ == '__main__':
+#     APP.secret_key = 'super_secret_key'
+#     APP.debug = True
+#     APP.run(host='0.0.0.0', port=5000)
