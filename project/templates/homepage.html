@@ -3,20 +3,25 @@
   <p>Please choose a preferred project from each session, then click submit</p>
   <hr>
   <h2>Choices</h2>
-  <!-- <div class="row"> -->
+  <div class="text-left">
     <form action="" method="post">
       {% for i in range(1, 5) %}
         <!-- <div class="col-md-3"> -->
           <h3>Session {{i}}</h3>
           {% for project in projects %}
             {% if project.session_number == i %}
-              <input type="radio" name="session{{i}}" value="{{project.name}}">{{project.name}}<br>
+              <input type="radio"  name="session{{i}}" value="{{project.name}}">{{project.name}}<br>
             {% endif %}
           {% endfor %}
         <!-- </div> -->
       {% endfor %}
-      <input type="submit">
+      <button type="submit" class="btn btn-default">
+        <span class="glyphicon glyphicon-arrow-right"></span>
+        Rank Choices
+      </button>
+      <!-- <input type="submit" value="Rank Choices"> -->
     </form>
-  <!-- </div> -->
-
+    <br>
+ </div>
+ 
 {% endblock %}

@@ -1,7 +1,7 @@
 import flask
 from flask import Flask, render_template, request, redirect, jsonify, url_for, flash, send_file
 from sqlalchemy import create_engine, asc, desc
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, scoped_session
 from database_setup import Base, Student, engine, Project, Pref
 from flask import session as login_session
 import random
@@ -30,11 +30,12 @@ application.config['SECRET_KEY'] = 'super_secret_key'
 # CLIENT_ID = json.loads(open('client_secrets.json', 'r').read())['web']['client_id']
 APPLICATION_NAME = "APEX Matching Project"
 
-engine = create_engine('sqlite:///database.db?check_same_thread=false')
+engine = create_engine('mysql+pymysql://chadwick:godolphins@apex-matching.c0plu8oomro4.us-east-2.rds.amazonaws.com:3306/testdb')
+# engine = create_engine('sqlite:///database.db?check_same_thread=false')
 Base.metadata.bind = engine
 
-DBSession = sessionmaker(bind=engine)
-session = DBSession()
+session_factory = sessionmaker(bind=engine)
+DBSession = scoped_session(session_factory)
 
 CHOICES = {
     'choice1': 1,
@@ -46,17 +47,25 @@ CHOICES = {
 
 @application.route('/', methods=['POST', 'GET'])
 def homepage():
+    session = DBSession()
     if request.method == 'POST':
         result = request.form
         login_session['chosen_projects'] = result.items()
         return render_template("rank_choices.html", chosen_projects=result.items())
     if 'username' not in login_session:
         return show_login()
-
+    
+    user = get_user_by_email(login_session['email'])
+    if user is None:
+        return show_login()
+    preferences = session.query(Pref).filter_by(student_id=user.id).order_by(Pref.pref_number).all()
+    if user.has_chosen_projects:
+        return render_template('student.html', preferences=preferences)
     projects = session.query(Project).all()
     return render_template('homepage.html', projects=projects)
 
 
+    
 @application.route('/rank_choices', methods=['POST'])
 def rank_choices():
     choices = request.form.items()
@@ -75,6 +84,10 @@ def verify_choices(choices):
     return len(sessionset) == 4
 
 def create_preferences(ranked_projects):
+    session = DBSession()
+    user = get_user_by_email(login_session['email'])
+    user.has_chosen_projects = True
+    session.add(user)
     for choice_num, project_name in ranked_projects:
         preference = Pref(pref_number=CHOICES[choice_num], name=project_name, student_id=get_user_id(
             login_session['email']))
@@ -85,6 +98,18 @@ def create_preferences(ranked_projects):
 def get_database():
     return send_file('./database.db')
 
+@application.route('/show_preferences')
+def show_preferences():
+    session = DBSession()
+    preferences = session.query(Pref).all()
+    print preferences
+    if preferences is not None:
+        user = get_user_by_email(login_session['email'])
+        user.has_chosen_projects = True
+        session.add(user)
+        session.commit()
+    return redirect(url_for('homepage'))
+    
 @application.route('/login')
 def show_login():
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
@@ -187,25 +212,36 @@ def gconnect():
 
 
 def create_user(login_session):
+    session = DBSession()
+
     newUser = Student(name=login_session['username'], email=login_session[
         'email'], picture=login_session['picture'])
     session.add(newUser)
     session.commit()
     user = session.query(Student).filter_by(email=login_session['email']).one()
+    # session.close()
     return user.id
 
 
 def get_user_by_email(email):
-    user = session.query(Student).filter_by(email=email).one()
-    return user
+    session = DBSession()
+    try:
+        user = session.query(Student).filter_by(email=email).one()
+        return user
+    except:
+        return None
 
 
 def get_user_info(user_id):
+    session = DBSession()
+
     user = session.query(Student).filter_by(id=user_id).one()
     return user
 
 
 def get_user_id(email):
+    session = DBSession()
+
     try:
         user = session.query(Student).filter_by(email=email).one()
         return user.id

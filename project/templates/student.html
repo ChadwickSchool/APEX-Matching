@@ -4,11 +4,7 @@
   <p>Mrs. White will notify you when your schedule is ready.</p>
   <hr>
   <h2>Choices</h2>
-  <ol>
-    {% for preference in preferences %}
-      <li>{{preference.name}}</li>
-    {% endfor %}
-
-  </ol>
-
+  {% for preference in preferences %}
+    {{preference.pref_number}}. {{preference.name}}<br>
+  {% endfor %}
 {% endblock %}
