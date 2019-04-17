@@ -70,10 +70,10 @@ class Pref(Base):
     student = relationship(Student)
 
 
-engine = create_engine('sqlite:///database.db')
+# engine = create_engine('sqlite:///database.db')
 
 # test = create_engine('mysql+pymysql://chadwick:godolphins@apex-matching.c0plu8oomro4.us-east-2.rds.amazonaws.com:3306/testdb')
 
-# engine = create_engine('mysql+pymysql://chadwick:godolphins@apex-matching2.c0plu8oomro4.us-east-2.rds.amazonaws.com:3306/production')
+engine = create_engine('mysql+pymysql://chadwick:godolphins@apex-matching16.c0plu8oomro4.us-east-2.rds.amazonaws.com:3306/production')
 
 Base.metadata.create_all(engine)

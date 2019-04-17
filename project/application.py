@@ -31,8 +31,10 @@ application.config['SECRET_KEY'] = 'super_secret_key'
 APPLICATION_NAME = "APEX Matching Project"
 
 # engine = create_engine('mysql+pymysql://chadwick:godolphins@apex-matching.c0plu8oomro4.us-east-2.rds.amazonaws.com:3306/testdb')
-engine = create_engine('sqlite:///database.db?check_same_thread=false')
+# engine = create_engine('sqlite:///database.db?check_same_thread=false')
 # engine = create_engine('mysql+pymysql://chadwick:godolphins@apex-matching2.c0plu8oomro4.us-east-2.rds.amazonaws.com:3306/production')
+
+engine = create_engine('mysql+pymysql://chadwick:godolphins@apex-matching16.c0plu8oomro4.us-east-2.rds.amazonaws.com:3306/production')
 Base.metadata.bind = engine
 
 session_factory = sessionmaker(bind=engine)
@@ -85,7 +87,7 @@ def choose_projects(session_number):
 
 def verify_choices(choices):
     projects = set()
-    print choices
+    # print choices
     for choice in choices:
         projects.add(choice)
     return len(projects) == 4
@@ -101,19 +103,17 @@ def rank_choices(session_number):
             all_choices = []
             for i in range(1, 5):
                 all_choices.extend(login_session['session_'+ str(i) +'_choices'])
-            print "All Choices"
-            print all_choices
             return create_preferences(all_choices)
         else:
             return redirect(url_for('choose_projects', session_number=session_number+1))
 
     flash("Must have unique choices")
-    return render_template("rank_choices.html", chosen_projects=login_session['chosen_projects'+ str(session_number)])
+    return render_template("rank_choices.html", chosen_projects=login_session['chosen_projects'+ str(session_number)], session_number=session_number)
 
 def verify_rankings(choices):
     rankings = set()
     for choice in choices:
-        print choice
+        # print choice
         rankings.add(choice[1])
     return len(rankings) == 4
 
@@ -128,7 +128,7 @@ def create_preferences(ranked_projects):
         session.add(preference)
         preferences.append(preference)
     session.commit()
-    flash("Your preferences have been saved")
+    # flash("Your preferences have been saved")
     return render_template('student.html', preferences=preferences)
 
 def get_key(item):
@@ -231,7 +231,7 @@ def gconnect():
     login_session['email'] = data["email"]
 
     # see if user exists, if it doesn't make a new one
-    user_id = get_user_id(login_session['email'])
+    user_id = get_user_id(data['email'])
     if user_id is None:
         user_id = create_user(login_session)
 
@@ -242,7 +242,7 @@ def gconnect():
     output += '<img src="'
     output += login_session['picture']
     output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
-    flash("you are now logged in as %s" % login_session['username'])
+    # flash("you are now logged in as %s" % login_session['username'])
     return output
 
 # User Helper Functions
@@ -250,12 +250,13 @@ def gconnect():
 
 def create_user(login_session):
     session = DBSession()
-
-    newUser = Student(name=login_session['username'], email=login_session[
-        'email'], picture=login_session['picture'])
-    session.add(newUser)
-    session.commit()
-    user = session.query(Student).filter_by(email=login_session['email']).one()
+    user = session.query(Student).filter_by(email=login_session['email']).first()
+    if user is None:
+        user = Student(name=login_session['username'], email=login_session[
+            'email'], picture=login_session['picture'])
+        session.add(user)
+        session.commit()
+    
     # session.close()
     return user.id
 
@@ -263,7 +264,7 @@ def create_user(login_session):
 def get_user_by_email(email):
     session = DBSession()
     try:
-        user = session.query(Student).filter_by(email=email).one()
+        user = session.query(Student).filter_by(email=email).first()
         return user
     except:
         return None
@@ -272,15 +273,14 @@ def get_user_by_email(email):
 def get_user_info(user_id):
     session = DBSession()
 
-    user = session.query(Student).filter_by(id=user_id).one()
+    user = session.query(Student).filter_by(id=user_id).first()
     return user
 
 
 def get_user_id(email):
     session = DBSession()
-
     try:
-        user = session.query(Student).filter_by(email=email).one()
+        user = session.query(Student).filter_by(email=email).first()
         return user.id
     except:
         return None
