@@ -7,3 +7,4 @@ pycodestyle
 redis
 requests
 SQLAlchemy
+PyMySQL

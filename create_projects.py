@@ -1,12 +1,15 @@
-"""Python file to populate database with fake data"""
-from sqlalchemy import create_engine
+import random
+from database_setup import Project, Base, Student, Pref
 from sqlalchemy.orm import sessionmaker
-from database_setup import Base, Student, engine, Pref, Project
+from sqlalchemy import create_engine
+from flask import session as login_session
+# from server.dao import (Address, Group, Person, PersonEmail, PersonPhone,
+#                         User, Position, Privilege)
+engine = create_engine('sqlite:///testing.db')
+Base.metadata.bind = engine
 
-ENGINE = create_engine('mysql+pymysql://chadwick:godolphins@apex-matching.c0plu8oomro4.us-east-2.rds.amazonaws.com:3306/testdb')
-Base.metadata.bind = ENGINE
-DBSESSION = sessionmaker(bind=ENGINE)
-session = DBSESSION()
+DBSession = sessionmaker(bind=engine)
+session = DBSession()
 
 A = Project(name='Lessons from a Student Athlete: Why the Grind Never Stops', session_number=1)
 B = Project(name='Free Food!: What I learned about the LAUSDs free lunch program', session_number=2)
@@ -202,24 +205,3 @@ session.add(CQ)
 session.add(CR)
 session.add(CS)
 session.commit()
-
-"""Create and add projects A-H to database"""
-# project_A = Project(name='A', session_number=1)
-# project_B = Project(name='B', session_number=1)
-# project_C = Project(name='C', session_number=2)
-# project_D = Project(name='D', session_number=2)
-# project_E = Project(name='E', session_number=3)
-# project_F = Project(name='F', session_number=3)
-# project_G = Project(name='G', session_number=4)
-# project_H = Project(name='H', session_number=4)
-#
-# SESSION.add(project_A)
-# SESSION.add(project_B)
-# SESSION.add(project_C)
-# SESSION.add(project_D)
-# SESSION.add(project_E)
-# SESSION.add(project_F)
-# SESSION.add(project_G)
-# SESSION.add(project_H)
-#
-# SESSION.commit()

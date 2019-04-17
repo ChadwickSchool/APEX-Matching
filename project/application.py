@@ -1,5 +1,5 @@
 import flask
-from flask import Flask, render_template, request, redirect, jsonify, url_for, flash
+from flask import Flask, render_template, request, redirect, jsonify, url_for, flash, send_file
 from sqlalchemy import create_engine, asc, desc
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Student, engine, Project, Pref
@@ -13,8 +13,18 @@ import json
 from flask import make_response
 import requests
 
+class ReverseProxied(object):
+    def __init__(self, app):
+        self.app = app
+
+    def __call__(self, environ, start_response):
+        scheme = environ.get('HTTP_X_FORWARDED_PROTO')
+        if scheme:
+            environ['wsgi.url_scheme'] = scheme
+        return self.app(environ, start_response)
 
 application = Flask(__name__)
+application.wsgi_app = ReverseProxied(application.wsgi_app)
 application.config['SECRET_KEY'] = 'super_secret_key'
 
 # CLIENT_ID = json.loads(open('client_secrets.json', 'r').read())['web']['client_id']
@@ -35,10 +45,10 @@ CHOICES = {
 
 
 @application.route('/', methods=['POST', 'GET'])
-@application.route('/home', methods=['POST', 'GET'])
 def homepage():
     if request.method == 'POST':
         result = request.form
+        login_session['chosen_projects'] = result.items()
         return render_template("rank_choices.html", chosen_projects=result.items())
     if 'username' not in login_session:
         return show_login()
@@ -49,10 +59,20 @@ def homepage():
 
 @application.route('/rank_choices', methods=['POST'])
 def rank_choices():
-    create_preferences(request.form.items())
-    flash("Your preferences have been saved")
-    return redirect(url_for('homepage'))
+    choices = request.form.items()
+    if has_no_duplicates(choices):
+        create_preferences(choices)
+        flash("Your preferences have been saved")
+        return redirect(url_for('homepage'))
+    
+    flash("Must have unique choices")
+    return render_template("rank_choices.html", chosen_projects=login_session['chosen_projects'])
 
+def has_no_duplicates(choices):
+    sessionset = set()
+    for choice in choices:
+        sessionset.add(choice[1])
+    return len(sessionset) == 4
 
 def create_preferences(ranked_projects):
     for choice_num, project_name in ranked_projects:
@@ -61,6 +81,9 @@ def create_preferences(ranked_projects):
         session.add(preference)
     session.commit()
 
+@application.route('/database')
+def get_database():
+    return send_file('./database.db')
 
 @application.route('/login')
 def show_login():
