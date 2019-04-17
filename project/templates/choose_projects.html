@@ -1,15 +1,19 @@
 {% extends "main.html" %}
 {% block content %}
-  <p>Please choose 4 projects from session {{i}}, then click submit</p>
+  {% if session_number == 4 %}
+    <p>Please choose 4 projects from Session {{i}}, then click Submit</p>
+  {% else %}
+    <p>Please choose 4 projects from Session {{i}}, then click Rank Choices</p>
+  {% endif %}
   <hr>
-  <h2>Choices</h2>
+  <h2>Choices: Session Number {{i}}</h2>
   <div class="text-left">
     <form action="" method="post">
         <!-- <div class="col-md-3"> -->
           <h3>Session {{i}}</h3>
           {% for project in projects %}
             {% if project.session_number == i %}
-              <input type="checkbox"  name="session{{i}}" value="{{project.name}}">{{project.name}}<br>
+              <input type="checkbox"  name="session{{i}}" value="{{project.name}}"> {{project.name}}<br>
             {% endif %}
         <!-- </div> -->
       {% endfor %}
