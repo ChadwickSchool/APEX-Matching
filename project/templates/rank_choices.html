@@ -1,6 +1,7 @@
 {% extends "main.html" %}
 {% block content %}
   <p>Now rank your preferred projects, then click Rank Choices</p>
+  <p>If you want to switch projects, click Chadwick Computer Science in the top left corner to go back to the projects page.</p>
   <hr>
   <h2>Choices</h2>
   <div class="text-left">
@@ -11,12 +12,14 @@
             <input type="radio" name="choice{{i}}" value="{{project_name}}">{{project_name}}<br>
         {% endfor %}
       {% endfor %}
-      <a href='{{url_for('homepage')}}'>
-  		    <button class="btn btn-default delete">
-  		    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Cancel</button>
-  	  </a>
+      
       <button type="submit" class="btn btn-primary">Submit</button>
-    </form>    
+    </form>
+    <!-- TODO: Cancel button doesn't work inside form  -->
+    <!-- <a href='{{url_for('homepage')}}'>
+        <button class="btn btn-default delete">
+        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Cancel</button>
+    </a>   -->
   </div>
   
   <br>
