@@ -31,8 +31,8 @@ application.config['SECRET_KEY'] = 'super_secret_key'
 APPLICATION_NAME = "APEX Matching Project"
 
 # engine = create_engine('mysql+pymysql://chadwick:godolphins@apex-matching.c0plu8oomro4.us-east-2.rds.amazonaws.com:3306/testdb')
-# engine = create_engine('sqlite:///database.db?check_same_thread=false')
-engine = create_engine('mysql+pymysql://chadwick:godolphins@apex-matching2.c0plu8oomro4.us-east-2.rds.amazonaws.com:3306/production')
+engine = create_engine('sqlite:///database.db?check_same_thread=false')
+# engine = create_engine('mysql+pymysql://chadwick:godolphins@apex-matching2.c0plu8oomro4.us-east-2.rds.amazonaws.com:3306/production')
 Base.metadata.bind = engine
 
 session_factory = sessionmaker(bind=engine)
@@ -49,42 +49,73 @@ CHOICES = {
 @application.route('/', methods=['POST', 'GET'])
 def homepage():
     session = DBSession()
-    if request.method == 'POST':
-        result = request.form
-        if not verify_choices(result.items()):
-            flash("You must select a project from each session")
-        else:
-            login_session['chosen_projects'] = result.items()
-            return render_template("rank_choices.html", chosen_projects=result.items())
+
     if 'username' not in login_session:
         return show_login()
-    
+
     user = get_user_by_email(login_session['email'])
     if user is None:
         return show_login()
+
     preferences = session.query(Pref).filter_by(student_id=user.id).order_by(Pref.pref_number).all()
-    
+
     if user.has_chosen_projects:
         return render_template('student.html', preferences=preferences)
-    projects = session.query(Project).all()
-    return render_template('homepage.html', projects=projects)
 
+    return redirect(url_for('choose_projects', session_number=1))
 
-    
-@application.route('/rank_choices', methods=['POST'])
-def rank_choices():
-    choices = request.form.items()
-    if verify_choices(choices):
-        return create_preferences(choices)
-    
-    flash("Must have unique choices")
-    return render_template("rank_choices.html", chosen_projects=login_session['chosen_projects'])
+@application.route('/projects/<int:session_number>/', methods=['GET', 'POST'])
+def choose_projects(session_number):
+    session = DBSession()
+    if 'username' not in login_session:
+        return show_login()
+
+    projects = session.query(Project).filter_by(session_number=session_number).all()
+    if request.method == 'POST':
+        # print request.form
+        result = request.form.getlist('session' + str(session_number))
+        # print result
+        if not len(result) == 4:
+            flash("You must select 4 projects")
+        else:
+            login_session['chosen_projects' + str(session_number)] = result
+            return render_template("rank_choices.html", session_number=session_number, chosen_projects=result)
+
+    return render_template('choose_projects.html', projects=projects, i=session_number)
 
 def verify_choices(choices):
-    sessionset = set()
+    projects = set()
+    print choices
     for choice in choices:
-        sessionset.add(choice[1])
-    return len(sessionset) == 4
+        projects.add(choice)
+    return len(projects) == 4
+
+
+@application.route('/projects/<int:session_number>/rank_choices', methods=['POST'])
+def rank_choices(session_number):
+    choices = request.form.items()
+    if verify_rankings(choices):
+        login_session['session_'+ str(session_number) +'_choices'] = choices
+
+        if session_number == 4:
+            all_choices = []
+            for i in range(1, 5):
+                all_choices.extend(login_session['session_'+ str(i) +'_choices'])
+            print "All Choices"
+            print all_choices
+            return create_preferences(all_choices)
+        else:
+            return redirect(url_for('choose_projects', session_number=session_number+1))
+
+    flash("Must have unique choices")
+    return render_template("rank_choices.html", chosen_projects=login_session['chosen_projects'+ str(session_number)])
+
+def verify_rankings(choices):
+    rankings = set()
+    for choice in choices:
+        print choice
+        rankings.add(choice[1])
+    return len(rankings) == 4
 
 def create_preferences(ranked_projects):
     session = DBSession()
@@ -93,8 +124,7 @@ def create_preferences(ranked_projects):
     session.add(user)
     preferences = []
     for choice_num, project_name in sorted(ranked_projects, key=get_key):
-        preference = Pref(pref_number=CHOICES[choice_num], name=project_name, student_id=get_user_id(
-            login_session['email']))
+        preference = Pref(pref_number=CHOICES[choice_num], name=project_name, student_id=user.id)
         session.add(preference)
         preferences.append(preference)
     session.commit()
@@ -118,7 +148,7 @@ def show_preferences():
         session.add(user)
         session.commit()
     return redirect(url_for('homepage'))
-    
+
 @application.route('/login')
 def show_login():
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)

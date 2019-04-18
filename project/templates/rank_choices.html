@@ -5,15 +5,21 @@
   <hr>
   <h2>Choices</h2>
   <div class="text-left">
-    <form action="{{url_for('rank_choices')}}" method="post">
+    <form action="{{url_for('rank_choices', session_number=session_number)}}" method="post">
       {% for i in range(1, 5) %}
         <h3>#{{i}} Choice</h3>
-        {% for session_name, project_name in chosen_projects %}
+        {% for project_name in chosen_projects %}
             <input type="radio" name="choice{{i}}" value="{{project_name}}">{{project_name}}<br>
         {% endfor %}
       {% endfor %}
-      
-      <button type="submit" class="btn btn-primary">Submit</button>
+      {% if session_number == 4 %}
+        <button type="submit" class="btn btn-primary">Submit</button>
+      {% else %}
+      <button type="submit" class="btn btn-default">
+        <span class="glyphicon glyphicon-arrow-right"></span>
+        Session {{session_number+1}}
+      </button>
+      {% endif %}
     </form>
     <!-- TODO: Cancel button doesn't work inside form  -->
     <!-- <a href='{{url_for('homepage')}}'>
@@ -21,6 +27,6 @@
         <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Cancel</button>
     </a>   -->
   </div>
-  
+
   <br>
 {% endblock %}

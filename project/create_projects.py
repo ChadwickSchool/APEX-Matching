@@ -5,7 +5,7 @@ from sqlalchemy import create_engine
 from flask import session as login_session
 # from server.dao import (Address, Group, Person, PersonEmail, PersonPhone,
 #                         User, Position, Privilege)
-engine = create_engine('sqlite:///testing.db')
+engine = create_engine('sqlite:///database.db')
 Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
