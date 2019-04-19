@@ -8,10 +8,10 @@ from sqlalchemy.sql import func
 Base = declarative_base()
 
 project_student_link = Table('project_student_link', Base.metadata,
-                             Column('project_id', Integer,
-                                    ForeignKey('project.id')),
-                             Column('student_id', Integer,
-                                    ForeignKey('student.id')))
+                             Column('project_name', String(500),
+                                    ForeignKey('project.name')),
+                             Column('student_name', String(500),
+                                    ForeignKey('student.name')))
 
 
 class Project(Base):
@@ -24,7 +24,7 @@ class Project(Base):
     pop_score = Column(Integer, nullable=True)
     room_number = Column(Integer, nullable=True)
     students = relationship('Student', secondary=project_student_link,
-                            back_populates='projects')
+                            backref='projects')
 
     @property
     def serialize(self):
@@ -47,16 +47,11 @@ class Student(Base):
     session_2_matched = Column(Boolean, default=False)
     session_3_matched = Column(Boolean, default=False)
     session_4_matched = Column(Boolean, default=False)
-    projects = relationship('Project', secondary=project_student_link,
-                            back_populates='students')
 
     @property
     def serialize(self):
         return {
-            'id': self.id,
-            'first_name': self.first_name,
-            'last_name': self.last_name,
-            'projects': [project.serialize for project in self.projects]
+            'name': self.name
         }
 
 
