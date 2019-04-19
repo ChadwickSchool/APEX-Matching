@@ -1,0 +1,14 @@
+{% extends "main.html" %}
+{% block content %}
+  <p>Here are your chosen projects. At this time you are not allowed to change your choices.</p>
+  <p>Mrs. White will notify you when your schedule is ready.</p>
+  <hr>
+  <h2>Choices</h2>
+  <ol>
+    {% for preference in preferences %}
+      <li>{{preference.name}}</li>
+    {% endfor %}
+
+  </ol>
+
+{% endblock %}
