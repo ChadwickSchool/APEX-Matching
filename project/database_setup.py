@@ -24,7 +24,7 @@ class Project(Base):
     pop_score = Column(Integer, nullable=True)
     room_number = Column(Integer, nullable=True)
     students = relationship('Student', secondary=project_student_link,
-                            back_populates='projects')
+                            backref='projects')
 
     @property
     def serialize(self):
@@ -47,8 +47,7 @@ class Student(Base):
     session_2_matched = Column(Boolean, default=False)
     session_3_matched = Column(Boolean, default=False)
     session_4_matched = Column(Boolean, default=False)
-    projects = relationship('Project', secondary=project_student_link,
-                            back_populates='students')
+    
 
     @property
     def serialize(self):
@@ -70,10 +69,11 @@ class Pref(Base):
     student = relationship(Student)
 
 
-# engine = create_engine('sqlite:///database.db')
+engine = create_engine('sqlite:///test.db')
 
 # test = create_engine('mysql+pymysql://chadwick:godolphins@apex-matching.c0plu8oomro4.us-east-2.rds.amazonaws.com:3306/testdb')
 
-engine = create_engine('mysql+pymysql://chadwick:godolphins@apex-matching16.c0plu8oomro4.us-east-2.rds.amazonaws.com:3306/production')
+# engine = create_engine('mysql+pymysql://chadwick:godolphins@apex-matching16.c0plu8oomro4.us-east-2.rds.amazonaws.com:3306/production')
+
 
 Base.metadata.create_all(engine)

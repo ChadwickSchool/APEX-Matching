@@ -8,7 +8,7 @@ from project_class import Project_class
 
 
 APP = Flask(__name__)
-ENGINE = create_engine('sqlite:///testing.db')
+ENGINE = create_engine('sqlite:///test.db')
 Base.metadata.bind = engine
 DBSESSION = sessionmaker(bind=engine)
 SESSION = DBSESSION()

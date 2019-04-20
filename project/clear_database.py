@@ -13,15 +13,33 @@ Base.metadata.bind = ENGINE
 DBSESSION = sessionmaker(bind=ENGINE)
 session = DBSESSION()
 
-# num_delete= session.query(Pref).delete()
+# num_delete= session.query(Pref).filter_by(student_id=99).delete()
 # print num_delete
-# print session.query(Student).filter_by(email='lsaltzmann2022@chadwickschool.org').delete()
+# print session.query(Student).filter_by(email='jddevaughnbrown@chadwickschool.org').delete()
+students = session.query(Student).all()
+for student in students:
+    student.session_1_matched = False
+    student.session_2_matched = False
+    student.session_3_matched = False
+    student.session_4_matched = False
+    session.add(student)
+
+projects = session.query(Project).all()
+
+for project in projects:
+    project.raw_score = 0
+    project.pop_score = 0
+    session.add(project)
+    
+
+# for student in students:
+#     print student.name
 # session.query(Project).delete()
 
-F = Project(name='Our Mighty Mascot, the Bottlenose Dolphin: The Flaws in our Recycling Habits: Macy Dimson', session_number=1)
-G = Project(name='We\'re Human, Too: Combatting Anti-Semitism in the Los Angeles Area: Sam Bogen', session_number=1)
-
-session.add(F)
-session.add(G)
+# F = Project(name='Take a Risk: An Antidote to an Overly Serious Youth: Bryce Baldridge', session_number=2)
+# G = Project(name='We\'re Human, Too: Combatting Anti-Semitism in the Los Angeles Area: Sam Bogen', session_number=1)
+# 
+# session.add(F)
+# session.add(G)
 
 session.commit()
