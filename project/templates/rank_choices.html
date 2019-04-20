@@ -1,7 +1,10 @@
 {% extends "main.html" %}
 {% block content %}
-  <p>Now rank your preferred projects, then click Rank Choices</p>
-  <p>If you want to switch projects, click Chadwick Computer Science in the top left corner to go back to the projects page.</p>
+  {% if session_number == 4 %}
+    <p>Please rank your 4 projects from Session {{i}}, then click Submit</p>
+  {% else %}
+    <p>Please rank your 4 projects from Session {{i}}, then click Rank Choices</p>
+  {% endif %}
   <hr>
   <h2>Choices: Session Number {{session_number}}</h2>
   <div class="text-left">
