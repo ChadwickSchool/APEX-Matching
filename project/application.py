@@ -52,7 +52,7 @@ CHOICES = {
 def homepage():
     session = DBSession()
 
-    if 'username' not in login_session:
+    if 'email' not in login_session:
         return show_login()
 
     user = get_user_by_email(login_session['email'])
@@ -69,7 +69,8 @@ def homepage():
 @application.route('/projects/<int:session_number>/', methods=['GET', 'POST'])
 def choose_projects(session_number):
     session = DBSession()
-    if 'username' not in login_session:
+    if 'email' not in login_session:
+        flash('You are not logged in')
         return show_login()
 
     projects = session.query(Project).filter_by(session_number=session_number).all()
@@ -95,6 +96,9 @@ def verify_choices(choices):
 
 @application.route('/projects/<int:session_number>/rank_choices', methods=['POST'])
 def rank_choices(session_number):
+    if 'email' not in login_session:
+        flash('You are not logged in')
+        return show_login()
     choices = request.form.items()
     if verify_rankings(choices):
         login_session['session_'+ str(session_number) +'_choices'] = choices
@@ -120,6 +124,11 @@ def verify_rankings(choices):
 def create_preferences(ranked_projects):
     session = DBSession()
     user = get_user_by_email(login_session['email'])
+    if user is None:
+        print login_session['email']
+        flash("Sorry something went wrong with your log in")
+        return show_login()
+        
     user.has_chosen_projects = True
     session.add(user)
     preferences = []
@@ -212,7 +221,7 @@ def gconnect():
     if stored_access_token is not None and gplus_id == stored_gplus_id:
         response = make_response(json.dumps(
             'Current user is already connected.'), 200)
-        response.headers[' -Type'] = 'application/json'
+        response.headers['Content-Type'] = 'application/json'
         return response
 
     # Store the access token in the session for later use.
