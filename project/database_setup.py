@@ -8,10 +8,10 @@ from sqlalchemy.sql import func
 Base = declarative_base()
 
 project_student_link = Table('project_student_link', Base.metadata,
-                             Column('project_id', Integer,
-                                    ForeignKey('project.id')),
-                             Column('student_id', Integer,
-                                    ForeignKey('student.id')))
+                             Column('project_name', String(500),
+                                    ForeignKey('project.name')),
+                             Column('student_name', String(500),
+                                    ForeignKey('student.name')))
 
 
 class Project(Base):
