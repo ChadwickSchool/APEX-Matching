@@ -15,13 +15,14 @@ session = DBSession()
 def create_preferences(student):
     session_numbers = [1, 2, 3, 4]
     random.shuffle(session_numbers)
-    pref_number = 1
     for session_number in session_numbers:
-        projects = session.query(Project).filter_by(session_number=session_number).all()
-        random_project = random.choice(projects)
-        pref = Pref(pref_number=pref_number, name=random_project.name, student=student)
-        session.add(pref)
-        pref_number += 1
+        pref_number = 1
+        for i in range(0,4):
+            projects = session.query(Project).filter_by(session_number=session_number).all()
+            random_project = random.choice(projects)
+            pref = Pref(pref_number=pref_number, name=random_project.name, student=student)
+            session.add(pref)
+            pref_number += 1
     session.commit()
 
 
