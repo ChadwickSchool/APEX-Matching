@@ -4,10 +4,11 @@ from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Student, engine, Pref, Project
 
 # ENGINE = create_engine('mysql+pymysql://chadwick:godolphins@apex-matching.c0plu8oomro4.us-east-2.rds.amazonaws.com:3306/testdb')
-# ENGINE = create_engine('sqlite:///database.db')
+ENGINE = create_engine('sqlite:///test.db')
 # ENGINE = create_engine('mysql+pymysql://chadwick:godolphins@apex-matching2.c0plu8oomro4.us-east-2.rds.amazonaws.com:3306/production')
 
-ENGINE = create_engine('mysql+pymysql://chadwick:godolphins@apex-matching16.c0plu8oomro4.us-east-2.rds.amazonaws.com:3306/production')
+# ENGINE = create_engine('mysql+pymysql://chadwick:godolphins@apex-matching16.c0plu8oomro4.us-east-2.rds.amazonaws.com:3306/production')
+
 
 Base.metadata.bind = ENGINE
 DBSESSION = sessionmaker(bind=ENGINE)
@@ -62,6 +63,10 @@ AQ = Project(name='Dance Dance Revolution: Dance\'s Impact on Athletic Performan
 AR = Project(name='The Sixth Extinction: How It Affects Insects: Brodrick Laird', session_number=2)
 AS = Project(name='Stitching Up the Cultural Gap: How to Improve Low-Income Patient Experience: Amber Zheng', session_number=2)
 AT = Project(name='Is Literature LIT?: Implementing Pleasure Reading Into the English Curriculum: Anandi Choudhury', session_number=2)
+bryce = Project(name='Take a Risk: An Antidote to an Overly Serious Youth: Bryce Baldridge', session_number=2)
+session.add(bryce)
+meera = Project(name='You\'ve Been Schooled: Self-Efficacy and Mentorship in Girls\' Educational Attainment: Meera Sood', session_number=2)
+session.add(meera)
 
 # Session 3 Projects
 AU = Project(name='Communicating Pressure and Depression: Luke Wagner', session_number=3)
@@ -113,11 +118,14 @@ CL = Project(name='You Live in a Kill-Zone. Here\'s What You Can Do About It: Ka
 CM = Project(name='Shop with Your Soul: A Beginner\'s Guide to Meat and Dairy Labels: Lauren Thomson', session_number=4)
 CN = Project(name='An Irrational Number: Addressing the Disproportionate Female Representation in Mathematical Fields: Megan Dinnegan', session_number=4)
 
+
 session.add(A)
 session.add(B)
 session.add(C)
 session.add(D)
 session.add(E)
+session.add(F)
+session.add(G)
 session.add(H)
 session.add(I)
 session.add(J)
