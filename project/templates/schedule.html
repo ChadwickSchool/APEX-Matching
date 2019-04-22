@@ -1,0 +1,15 @@
+{% extends "main.html" %}
+{% block content %}
+  <p>Your preferences have been saved successfully. At this time you are not allowed to change your choices.</p>
+  <p>Mrs. White will notify you when your schedule is ready.</p>
+  <hr>
+  <h3>Round 1: 12:45 - 1:10</h3>
+  <p style="padding-left: 5%">{{projects[0].name}}</p>
+  <h3>Round 2: 1:15 - 1:40</h3>
+  <p style="padding-left: 5%">{{projects[1].name}}</p>
+  <h3>Round 3: 1:45 - 2:10</h3>
+  <p style="padding-left: 5%">{{projects[2].name}}</p>
+  <h3>Round 4: 2:15 - 2:40</h3>
+  <p style="padding-left: 5%">{{projects[3].name}}</p>
+
+{% endblock %}

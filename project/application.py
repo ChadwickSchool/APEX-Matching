@@ -59,12 +59,33 @@ def homepage():
     if user is None:
         return show_login()
 
-    preferences = session.query(Pref).filter_by(student_id=user.id).order_by(Pref.pref_number).all()
-
     if user.has_chosen_projects:
-        return render_template('student.html', preferences=preferences)
+        return render_template('student.html')
 
-    return redirect(url_for('choose_projects', session_number=1))
+    return redirect(url_for('show_schedule'))
+
+@application.route('/show_schedule', methods=['GET'])
+def show_schedule():
+    session = DBSession()
+    if 'email' not in login_session:
+        flash('You are not logged in')
+        return show_login()
+    
+    projects = get_assigned_projects()
+    return render_template('schedule.html', projects=projects)
+
+def get_assigned_projects():
+    if login_session['assigned_projects'] is None:
+        login_session['assigned_projects'] = []
+        user = get_user_by_email(login_session['email'])
+        projects = session.query(Project).all()
+        for project in projects:
+            if user in project.students:
+                login_session['assigned_projects'].append(project)
+    
+    return login_session['assigned_projects']
+        
+    
 
 @application.route('/projects/<int:session_number>/', methods=['GET', 'POST'])
 def choose_projects(session_number):
