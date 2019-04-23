@@ -35,16 +35,6 @@ def show_projects():
     return render_template('main.html', projects=PROJECTS)
 
 
-
-def clear_all_students():
-    '''Sets all student's matched to 0 (not matched)'''
-    students = SESSION.query(Student).all()
-    for stud in students:
-        stud.matched = 0
-        SESSION.add(stud)
-        SESSION.commit()
-
-
 def get_raw_score(project):
     """
     Return # of students that have marked the given project as a preference
@@ -121,25 +111,21 @@ def get_underfilled_groups():
 
 def print_projects():
     print 'Session 1 Projects: '
-    print '/n'
     for proj in SESSION_1_PROJECTS:
         print('Project: ' + proj.proj_name)
         print('Students: ')
         print proj.students
     print 'Session 2 Projects: '
-    print '/n'
     for proj in SESSION_2_PROJECTS:
         print('Project: ' + proj.proj_name)
         print('Students: ')
         print proj.students
     print 'Session 3 Projects: '
-    print '/n'
     for proj in SESSION_3_PROJECTS:
         print('Project: ' + proj.proj_name)
         print('Students: ')
         print proj.students
     print 'Session 4 Projects: '
-    print '/n'
     for proj in SESSION_4_PROJECTS:
         print('Project: ' + proj.proj_name)
         print('Students: ')
@@ -162,40 +148,24 @@ def give_all_prefs():
                 id=pref.student_id).one()
             if session_num is 1:
                 if student.session_1_matched is False:
-                    # if len(student_names) is 0:
-                    #     student_names.append(student.name)
-                    # else:
-                    #     student_names.append(student.name)
                     student_names.append(student.name)
                     student.session_1_matched = True
                     SESSION.add(student)
                     SESSION.commit()
             if session_num is 2:
                 if student.session_2_matched is False:
-                    # if len(student_names) is 0:
-                    #     student_names.append(student.name)
-                    # else:
-                    #     student_names.append(student.name)
                     student_names.append(student.name)
                     student.session_2_matched = True
                     SESSION.add(student)
                     SESSION.commit()
             if session_num is 3:
                 if student.session_3_matched is False:
-                    # if len(student_names) is 0:
-                    #     student_names.append(student.name)
-                    # else:
-                    #     student_names.append(student.name)
                     student_names.append(student.name)
                     student.session_3_matched = True
                     SESSION.add(student)
                     SESSION.commit()
             if session_num is 4:
                 if student.session_4_matched is False:
-                    # if len(student_names) is 0:
-                    #     student_names.append(student.name)
-                    # else:
-                    #     student_names.append(student.name)
                     student_names.append(student.name)
                     student.session_4_matched = True
                     SESSION.add(student)
@@ -302,6 +272,7 @@ def give_second_prefs():
                         proj.students.append(student.name)
                     else:
                         proj.students.append(student.name)
+                        print 'added: ' + student.name + 'to project: ' + project_name + 'as 2nd pref'
 
     SESSION_2_PROJECTS.sort(key=lambda Project: Project.num_studs, reverse=False)
     for proj in SESSION_2_PROJECTS:
@@ -325,6 +296,7 @@ def give_second_prefs():
                         proj.students.append(student.name)
                     else:
                         proj.students.append(student.name)
+                        print 'added: ' + student.name + 'to project: ' + project_name + 'as 2nd pref'
 
     SESSION_3_PROJECTS.sort(key=lambda Project: Project.num_studs, reverse=False)
     for proj in SESSION_3_PROJECTS:
@@ -348,6 +320,7 @@ def give_second_prefs():
                         proj.students.append(student.name)
                     else:
                         proj.students.append(student.name)
+                        print 'added: ' + student.name + 'to project: ' + project_name + 'as 2nd pref'
 
     SESSION_4_PROJECTS.sort(key=lambda Project: Project.num_studs, reverse=False)
     for proj in SESSION_4_PROJECTS:
@@ -371,6 +344,7 @@ def give_second_prefs():
                         proj.students.append(student.name)
                     else:
                         proj.students.append(student.name)
+                        print 'added: ' + student.name + 'to project: ' + project_name + 'as 2nd pref'
 
 def give_third_prefs():
     """
@@ -398,6 +372,8 @@ def give_third_prefs():
                         proj.students.append(student.name)
                     else:
                         proj.students.append(student.name)
+                        print 'added: ' + student.name + 'to project: ' + project_name + 'as 3rd pref'
+
     SESSION_2_PROJECTS.sort(key=lambda Project: Project.num_studs, reverse=False)
     for proj in SESSION_2_PROJECTS:
         project_name = proj.proj_name
@@ -420,6 +396,7 @@ def give_third_prefs():
                         proj.students.append(student.name)
                     else:
                         proj.students.append(student.name)
+                        print 'added: ' + student.name + 'to project: ' + project_name + 'as 3rd pref'
 
     SESSION_3_PROJECTS.sort(key=lambda Project: Project.num_studs, reverse=False)
     for proj in SESSION_3_PROJECTS:
@@ -443,6 +420,7 @@ def give_third_prefs():
                         proj.students.append(student.name)
                     else:
                         proj.students.append(student.name)
+                        print 'added: ' + student.name + 'to project: ' + project_name + 'as 3rd pref'
 
     SESSION_4_PROJECTS.sort(key=lambda Project: Project.num_studs, reverse=False)
     for proj in SESSION_4_PROJECTS:
@@ -466,6 +444,7 @@ def give_third_prefs():
                         proj.students.append(student.name)
                     else:
                         proj.students.append(student.name)
+                        print 'added: ' + student.name + 'to project: ' + project_name + 'as 3rd pref'
 
 
 def give_fourth_prefs():
@@ -494,6 +473,7 @@ def give_fourth_prefs():
                         proj.students.append(student.name)
                     else:
                         proj.students.append(student.name)
+                        print 'added: ' + student.name + 'to project: ' + project_name + 'as 4th pref'
 
     SESSION_2_PROJECTS.sort(key=lambda Project: Project.num_studs, reverse=False)
     for proj in SESSION_2_PROJECTS:
@@ -517,6 +497,7 @@ def give_fourth_prefs():
                         proj.students.append(student.name)
                     else:
                         proj.students.append(student.name)
+                        print 'added: ' + student.name + 'to project: ' + project_name + 'as 4th pref'
 
     SESSION_3_PROJECTS.sort(key=lambda Project: Project.num_studs, reverse=False)
     for proj in SESSION_3_PROJECTS:
@@ -540,6 +521,7 @@ def give_fourth_prefs():
                         proj.students.append(student.name)
                     else:
                         proj.students.append(student.name)
+                        print 'added: ' + student.name + 'to project: ' + project_name + 'as 4th pref'
 
     SESSION_4_PROJECTS.sort(key=lambda Project: Project.num_studs, reverse=False)
     for proj in SESSION_4_PROJECTS:
@@ -563,6 +545,7 @@ def give_fourth_prefs():
                         proj.students.append(student.name)
                     else:
                         proj.students.append(student.name)
+                        print 'added: ' + student.name + ' to project: ' + project_name + ' as 4th pref'
 
 def get_unmatched_students():
     """Return students that are unmatched in a project called Not Matched"""
@@ -600,41 +583,6 @@ def get_unmatched_students():
     return 'it worked'
 
 
-def give_room_number(room_nums, session_num):
-    """Add room numbers for each project in database"""
-    n = 0
-    if session_num is 1:
-        for room in room_nums:
-            if n < NUM_OF_PROJS:
-                proj = SESSION.query(Project).filter_by(id=n)
-                proj.room_number = room
-                SESSION.add(proj)
-                SESSION.commit()
-                n = n + 1
-    if session_num is 2:
-        for room in room_nums:
-            if n < NUM_OF_PROJS:
-                proj = SESSION.query(Project).filter_by(id=n)
-                proj.room_number = room
-                SESSION.add(proj)
-                SESSION.commit()
-                n = n + 1
-    if session_num is 3:
-        for room in room_nums:
-            if n < NUM_OF_PROJS:
-                proj = SESSION.query(Project).filter_by(id=n)
-                proj.room_number = room
-                SESSION.add(proj)
-                SESSION.commit()
-                n = n + 1
-    if session_num is 4:
-        for room in room_nums:
-            if n < NUM_OF_PROJS:
-                proj = SESSION.query(Project).filter_by(id=n)
-                proj.room_number = room
-                SESSION.add(proj)
-                SESSION.commit()
-                n = n + 1
 give_all_prefs()
 give_first_prefs()
 give_second_prefs()

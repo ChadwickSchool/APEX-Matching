@@ -1,19 +1,32 @@
 {% extends "main.html" %}
 {% block content %}
-  <p>Now rank your preferred projects, then click submit</p>
+  <p>Now rank your preferred projects, then click Rank Choices</p>
+  <p>If you want to switch projects, click Chadwick Computer Science in the top left corner to go back to the projects page.</p>
   <hr>
-  <h2>Choices</h2>
-  <form action="{{url_for('rank_choices')}}" method="post">
-    {% for i in range(1, 5) %}
-      <h3>#{{i}} Choice</h3>
-      {% for session_name, project_name in chosen_projects %}
-          <input type="radio" name="choice{{i}}" value="{{project_name}}">{{project_name}}<br>
+  <h2>Choices: Session Number {{session_number}}</h2>
+  <div class="text-left">
+    <form action="{{url_for('rank_choices', session_number=session_number)}}" method="post">
+      {% for i in range(1, 5) %}
+        <h3>#{{i}} Choice</h3>
+        {% for project_name in chosen_projects %}
+            <input type="radio" name="choice{{i}}" value="{{project_name}}">{{project_name}}<br>
+        {% endfor %}
       {% endfor %}
-    {% endfor %}
-    <a href='{{url_for('homepage')}}'>
-		    <button class="btn btn-default delete">
-		    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Cancel</button>
-	  </a>
-    <input type="submit">
-  </form>
+      {% if session_number == 4 %}
+        <button type="submit" class="btn btn-primary">Submit</button>
+      {% else %}
+      <button type="submit" class="btn btn-default">
+        <span class="glyphicon glyphicon-arrow-right"></span>
+        Session {{session_number+1}}
+      </button>
+      {% endif %}
+    </form>
+    <!-- TODO: Cancel button doesn't work inside form  -->
+    <!-- <a href='{{url_for('homepage')}}'>
+        <button class="btn btn-default delete">
+        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Cancel</button>
+    </a>   -->
+  </div>
+
+  <br>
 {% endblock %}
