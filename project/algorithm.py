@@ -16,7 +16,6 @@ SESSION = DBSESSION()
 NUMBER_OF_PREFS = 4
 MAX_STUDS_PER_GROUP = 15
 MIN_STUDS_PER_GROUP = 7
-NUM_OF_PROJS = 25
 SESSION_1_PROJECTS = []
 SESSION_2_PROJECTS = []
 SESSION_3_PROJECTS = []
@@ -301,14 +300,15 @@ def give_second_prefs():
         prefs = SESSION.query(Pref).filter_by(name=project_name)
         prefs = prefs.filter_by(pref_number=2).all()
         student_names = []
+        studs_in_proj = proj.num_studs
         for pref in prefs:
-            studs_in_proj = proj.num_studs
             student = SESSION.query(Student).filter_by(
                 id=pref.student_id).one()
             if student.session_1_matched is False:
                 if studs_in_proj < MAX_STUDS_PER_GROUP:
                     student_names.append(student.name)
                     student.session_1_matched = True
+                    studs_in_proj = studs_in_proj + 1
                     SESSION.add(student)
                     SESSION.commit()
                     if len(proj.students) is 0:
@@ -325,14 +325,15 @@ def give_second_prefs():
         prefs = SESSION.query(Pref).filter_by(name=project_name)
         prefs = prefs.filter_by(pref_number=2).all()
         student_names = []
+        studs_in_proj = proj.num_studs
         for pref in prefs:
-            studs_in_proj = proj.num_studs
             student = SESSION.query(Student).filter_by(
                 id=pref.student_id).one()
             if student.session_2_matched is False:
                 if studs_in_proj < MAX_STUDS_PER_GROUP:
                     student_names.append(student.name)
                     student.session_2_matched = True
+                    studs_in_proj = studs_in_proj + 1
                     SESSION.add(student)
                     SESSION.commit()
                     if len(proj.students) is 0:
@@ -349,14 +350,15 @@ def give_second_prefs():
         prefs = SESSION.query(Pref).filter_by(name=project_name)
         prefs = prefs.filter_by(pref_number=2).all()
         student_names = []
+        studs_in_proj = proj.num_studs
         for pref in prefs:
-            studs_in_proj = proj.num_studs
             student = SESSION.query(Student).filter_by(
                 id=pref.student_id).one()
             if student.session_3_matched is False:
                 if studs_in_proj < MAX_STUDS_PER_GROUP:
                     student_names.append(student.name)
                     student.session_3_matched = True
+                    studs_in_proj = studs_in_proj + 1
                     SESSION.add(student)
                     SESSION.commit()
                     if len(proj.students) is 0:
@@ -373,14 +375,15 @@ def give_second_prefs():
         prefs = SESSION.query(Pref).filter_by(name=project_name)
         prefs = prefs.filter_by(pref_number=2).all()
         student_names = []
+        studs_in_proj = proj.num_studs
         for pref in prefs:
-            studs_in_proj = proj.num_studs
             student = SESSION.query(Student).filter_by(
                 id=pref.student_id).one()
             if student.session_4_matched is False:
                 if studs_in_proj < MAX_STUDS_PER_GROUP:
                     student_names.append(student.name)
                     student.session_4_matched = True
+                    studs_in_proj = studs_in_proj + 1
                     SESSION.add(student)
                     SESSION.commit()
                     if len(proj.students) is 0:
@@ -402,14 +405,15 @@ def give_third_prefs():
         prefs = SESSION.query(Pref).filter_by(name=project_name)
         prefs = prefs.filter_by(pref_number=3).all()
         student_names = []
+        studs_in_proj = proj.num_studs
         for pref in prefs:
-            studs_in_proj = proj.num_studs
             student = SESSION.query(Student).filter_by(
                 id=pref.student_id).one()
             if student.session_1_matched is False:
                 if studs_in_proj < MAX_STUDS_PER_GROUP:
                     student_names.append(student.name)
                     student.session_1_matched = True
+                    studs_in_proj = studs_in_proj + 1
                     SESSION.add(student)
                     SESSION.commit()
                     if len(proj.students) is 0:
@@ -426,14 +430,15 @@ def give_third_prefs():
         prefs = SESSION.query(Pref).filter_by(name=project_name)
         prefs = prefs.filter_by(pref_number=3).all()
         student_names = []
+        studs_in_proj = proj.num_studs
         for pref in prefs:
-            studs_in_proj = proj.num_studs
             student = SESSION.query(Student).filter_by(
                 id=pref.student_id).one()
             if student.session_2_matched is False:
                 if studs_in_proj < MAX_STUDS_PER_GROUP:
                     student_names.append(student.name)
                     student.session_2_matched = True
+                    studs_in_proj = studs_in_proj + 1
                     SESSION.add(student)
                     SESSION.commit()
                     if len(proj.students) is 0:
@@ -450,14 +455,15 @@ def give_third_prefs():
         prefs = SESSION.query(Pref).filter_by(name=project_name)
         prefs = prefs.filter_by(pref_number=3).all()
         student_names = []
+        studs_in_proj = proj.num_studs
         for pref in prefs:
-            studs_in_proj = proj.num_studs
             student = SESSION.query(Student).filter_by(
                 id=pref.student_id).one()
             if student.session_3_matched is False:
                 if studs_in_proj < MAX_STUDS_PER_GROUP:
                     student_names.append(student.name)
                     student.session_3_matched = True
+                    studs_in_proj = studs_in_proj + 1
                     SESSION.add(student)
                     SESSION.commit()
                     if len(proj.students) is 0:
@@ -474,14 +480,15 @@ def give_third_prefs():
         prefs = SESSION.query(Pref).filter_by(name=project_name)
         prefs = prefs.filter_by(pref_number=3).all()
         student_names = []
+        studs_in_proj = proj.num_studs
         for pref in prefs:
-            studs_in_proj = proj.num_studs
             student = SESSION.query(Student).filter_by(
                 id=pref.student_id).one()
             if student.session_4_matched is False:
                 if studs_in_proj < MAX_STUDS_PER_GROUP:
                     student_names.append(student.name)
                     student.session_4_matched = True
+                    studs_in_proj = studs_in_proj + 1
                     SESSION.add(student)
                     SESSION.commit()
                     if len(proj.students) is 0:
@@ -503,14 +510,15 @@ def give_fourth_prefs():
         prefs = SESSION.query(Pref).filter_by(name=project_name)
         prefs = prefs.filter_by(pref_number=4).all()
         student_names = []
+        studs_in_proj = proj.num_studs
         for pref in prefs:
-            studs_in_proj = proj.num_studs
             student = SESSION.query(Student).filter_by(
                 id=pref.student_id).one()
             if student.session_1_matched is False:
                 if studs_in_proj < MAX_STUDS_PER_GROUP:
                     student_names.append(student.name)
                     student.session_1_matched = True
+                    studs_in_proj = studs_in_proj + 1
                     SESSION.add(student)
                     SESSION.commit()
                     if len(proj.students) is 0:
@@ -527,14 +535,15 @@ def give_fourth_prefs():
         prefs = SESSION.query(Pref).filter_by(name=project_name)
         prefs = prefs.filter_by(pref_number=4).all()
         student_names = []
+        studs_in_proj = proj.num_studs
         for pref in prefs:
-            studs_in_proj = proj.num_studs
             student = SESSION.query(Student).filter_by(
                 id=pref.student_id).one()
             if student.session_2_matched is False:
                 if studs_in_proj < MAX_STUDS_PER_GROUP:
                     student_names.append(student.name)
                     student.session_2_matched = True
+                    studs_in_proj = studs_in_proj + 1
                     SESSION.add(student)
                     SESSION.commit()
                     if len(proj.students) is 0:
@@ -551,14 +560,15 @@ def give_fourth_prefs():
         prefs = SESSION.query(Pref).filter_by(name=project_name)
         prefs = prefs.filter_by(pref_number=4).all()
         student_names = []
+        studs_in_proj = proj.num_studs
         for pref in prefs:
-            studs_in_proj = proj.num_studs
             student = SESSION.query(Student).filter_by(
                 id=pref.student_id).one()
             if student.session_3_matched is False:
                 if studs_in_proj < MAX_STUDS_PER_GROUP:
                     student_names.append(student.name)
                     student.session_3_matched = True
+                    studs_in_proj = studs_in_proj + 1
                     SESSION.add(student)
                     SESSION.commit()
                     if len(proj.students) is 0:
@@ -575,14 +585,15 @@ def give_fourth_prefs():
         prefs = SESSION.query(Pref).filter_by(name=project_name)
         prefs = prefs.filter_by(pref_number=4).all()
         student_names = []
+        studs_in_proj = proj.num_studs
         for pref in prefs:
-            studs_in_proj = proj.num_studs
             student = SESSION.query(Student).filter_by(
                 id=pref.student_id).one()
             if student.session_4_matched is False:
                 if studs_in_proj < MAX_STUDS_PER_GROUP:
                     student_names.append(student.name)
                     student.session_4_matched = True
+                    studs_in_proj = studs_in_proj + 1
                     SESSION.add(student)
                     SESSION.commit()
                     if len(proj.students) is 0:

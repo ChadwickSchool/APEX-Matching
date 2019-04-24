@@ -18,11 +18,9 @@ class Project(Base):
     __tablename__ = 'project'
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(500))
-    stud_name = Column(String(32), nullable=True)
     session_number = Column(Integer, nullable=False)
     raw_score = Column(Integer, nullable=True)
     pop_score = Column(Integer, nullable=True)
-    room_number = Column(Integer, nullable=True)
     students = relationship('Student', secondary=project_student_link,
                             backref='projects')
 
