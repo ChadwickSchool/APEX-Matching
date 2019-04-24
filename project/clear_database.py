@@ -1,27 +1,32 @@
-"""Python file to populate database with fake data"""
-from sqlalchemy import create_engine
+import random
+from test_database_setup import Project, Base, Student, Pref, project_student_link
 from sqlalchemy.orm import sessionmaker
-from database_setup import Base, Student, engine, Pref, Project
+from sqlalchemy import create_engine
+from flask import session as login_session
+# from server.dao import (Address, Group, Person, PersonEmail, PersonPhone,
+#                         User, Position, Privilege)
+engine = create_engine('sqlite:///testdatabase.db')
+Base.metadata.bind = engine
 
-# ENGINE = create_engine('mysql+pymysql://chadwick:godolphins@apex-matching.c0plu8oomro4.us-east-2.rds.amazonaws.com:3306/testdb')
-# ENGINE = create_engine('mysql+pymysql://chadwick:godolphins@apex-matching2.c0plu8oomro4.us-east-2.rds.amazonaws.com:3306/production')
-# ENGINE = create_engine('sqlite:///database.db')
+DBSession = sessionmaker(bind=engine)
+session = DBSession()
 
-ENGINE = create_engine('mysql+pymysql://chadwick:godolphins@apex-matching16.c0plu8oomro4.us-east-2.rds.amazonaws.com:3306/production')
+projects = session.query(Project).all()
 
-Base.metadata.bind = ENGINE
-DBSESSION = sessionmaker(bind=ENGINE)
-session = DBSESSION()
+for project in projects:
+    project.raw_score = 0
+    project.pop_score = 0
+    session.add(project)
+    
 
-# num_delete= session.query(Pref).delete()
-# print num_delete
-# print session.query(Student).filter_by(email='lsaltzmann2022@chadwickschool.org').delete()
-# session.query(Project).delete()
+students = session.query(Student).all()
+for student in students:
+    student.session_1_matched = False
+    student.session_2_matched = False
+    student.session_3_matched = False
+    student.session_4_matched = False
+    session.add(student)
+    
 
-F = Project(name='Our Mighty Mascot, the Bottlenose Dolphin: The Flaws in our Recycling Habits: Macy Dimson', session_number=1)
-G = Project(name='We\'re Human, Too: Combatting Anti-Semitism in the Los Angeles Area: Sam Bogen', session_number=1)
-
-session.add(F)
-session.add(G)
-
+# session.query(project_student_link).delete()
 session.commit()

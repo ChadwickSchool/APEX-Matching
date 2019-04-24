@@ -1,12 +1,12 @@
 import barnum
 import random
-from database_setup import Project, Base, Student, Pref
+from test_database_setup import Project, Base, Student, Pref
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 from flask import session as login_session
 # from server.dao import (Address, Group, Person, PersonEmail, PersonPhone,
 #                         User, Position, Privilege)
-engine = create_engine('sqlite:///testing.db')
+engine = create_engine('sqlite:///testdatabase.db')
 Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
