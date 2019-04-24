@@ -8,14 +8,14 @@ from project_class import Project_class
 
 
 APP = Flask(__name__)
-ENGINE = create_engine('sqlite:///testing.db')
+ENGINE = create_engine('sqlite:///test.db')
 Base.metadata.bind = engine
 DBSESSION = sessionmaker(bind=engine)
 SESSION = DBSESSION()
 
 NUMBER_OF_PREFS = 4
-MAX_STUDS_PER_GROUP = 15
-MIN_STUDS_PER_GROUP = 7
+MAX_STUDS_PER_GROUP = 20
+MIN_STUDS_PER_GROUP = 10
 SESSION_1_PROJECTS = []
 SESSION_2_PROJECTS = []
 SESSION_3_PROJECTS = []
@@ -300,7 +300,7 @@ def give_second_prefs():
         prefs = SESSION.query(Pref).filter_by(name=project_name)
         prefs = prefs.filter_by(pref_number=2).all()
         student_names = []
-        studs_in_proj = proj.num_studs
+        studs_in_proj = len(proj.students)
         for pref in prefs:
             student = SESSION.query(Student).filter_by(
                 id=pref.student_id).one()
@@ -325,7 +325,7 @@ def give_second_prefs():
         prefs = SESSION.query(Pref).filter_by(name=project_name)
         prefs = prefs.filter_by(pref_number=2).all()
         student_names = []
-        studs_in_proj = proj.num_studs
+        studs_in_proj = len(proj.students)
         for pref in prefs:
             student = SESSION.query(Student).filter_by(
                 id=pref.student_id).one()
@@ -350,7 +350,7 @@ def give_second_prefs():
         prefs = SESSION.query(Pref).filter_by(name=project_name)
         prefs = prefs.filter_by(pref_number=2).all()
         student_names = []
-        studs_in_proj = proj.num_studs
+        studs_in_proj = len(proj.students)
         for pref in prefs:
             student = SESSION.query(Student).filter_by(
                 id=pref.student_id).one()
@@ -375,7 +375,7 @@ def give_second_prefs():
         prefs = SESSION.query(Pref).filter_by(name=project_name)
         prefs = prefs.filter_by(pref_number=2).all()
         student_names = []
-        studs_in_proj = proj.num_studs
+        studs_in_proj = len(proj.students)
         for pref in prefs:
             student = SESSION.query(Student).filter_by(
                 id=pref.student_id).one()
@@ -405,7 +405,7 @@ def give_third_prefs():
         prefs = SESSION.query(Pref).filter_by(name=project_name)
         prefs = prefs.filter_by(pref_number=3).all()
         student_names = []
-        studs_in_proj = proj.num_studs
+        studs_in_proj = len(proj.students)
         for pref in prefs:
             student = SESSION.query(Student).filter_by(
                 id=pref.student_id).one()
@@ -430,7 +430,7 @@ def give_third_prefs():
         prefs = SESSION.query(Pref).filter_by(name=project_name)
         prefs = prefs.filter_by(pref_number=3).all()
         student_names = []
-        studs_in_proj = proj.num_studs
+        studs_in_proj = len(proj.students)
         for pref in prefs:
             student = SESSION.query(Student).filter_by(
                 id=pref.student_id).one()
@@ -455,7 +455,7 @@ def give_third_prefs():
         prefs = SESSION.query(Pref).filter_by(name=project_name)
         prefs = prefs.filter_by(pref_number=3).all()
         student_names = []
-        studs_in_proj = proj.num_studs
+        studs_in_proj = len(proj.students)
         for pref in prefs:
             student = SESSION.query(Student).filter_by(
                 id=pref.student_id).one()
@@ -480,7 +480,7 @@ def give_third_prefs():
         prefs = SESSION.query(Pref).filter_by(name=project_name)
         prefs = prefs.filter_by(pref_number=3).all()
         student_names = []
-        studs_in_proj = proj.num_studs
+        studs_in_proj = len(proj.students)
         for pref in prefs:
             student = SESSION.query(Student).filter_by(
                 id=pref.student_id).one()
@@ -510,7 +510,7 @@ def give_fourth_prefs():
         prefs = SESSION.query(Pref).filter_by(name=project_name)
         prefs = prefs.filter_by(pref_number=4).all()
         student_names = []
-        studs_in_proj = proj.num_studs
+        studs_in_proj = len(proj.students)
         for pref in prefs:
             student = SESSION.query(Student).filter_by(
                 id=pref.student_id).one()
@@ -535,7 +535,7 @@ def give_fourth_prefs():
         prefs = SESSION.query(Pref).filter_by(name=project_name)
         prefs = prefs.filter_by(pref_number=4).all()
         student_names = []
-        studs_in_proj = proj.num_studs
+        studs_in_proj = len(proj.students)
         for pref in prefs:
             student = SESSION.query(Student).filter_by(
                 id=pref.student_id).one()
@@ -560,7 +560,7 @@ def give_fourth_prefs():
         prefs = SESSION.query(Pref).filter_by(name=project_name)
         prefs = prefs.filter_by(pref_number=4).all()
         student_names = []
-        studs_in_proj = proj.num_studs
+        studs_in_proj = len(proj.students)
         for pref in prefs:
             student = SESSION.query(Student).filter_by(
                 id=pref.student_id).one()
@@ -585,7 +585,7 @@ def give_fourth_prefs():
         prefs = SESSION.query(Pref).filter_by(name=project_name)
         prefs = prefs.filter_by(pref_number=4).all()
         student_names = []
-        studs_in_proj = proj.num_studs
+        studs_in_proj = len(proj.students)
         for pref in prefs:
             student = SESSION.query(Student).filter_by(
                 id=pref.student_id).one()
