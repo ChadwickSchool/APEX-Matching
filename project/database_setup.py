@@ -8,10 +8,10 @@ from sqlalchemy.sql import func
 Base = declarative_base()
 
 project_student_link = Table('project_student_link', Base.metadata,
-                             Column('project_name', String(500),
-                                    ForeignKey('project.name')),
-                             Column('student_name', String(500),
-                                    ForeignKey('student.name')))
+                             Column('project_id', String(500),
+                                    ForeignKey('project.id')),
+                             Column('student_id', String(500),
+                                    ForeignKey('student.id')))
 
 
 class Project(Base):
@@ -63,7 +63,7 @@ class Pref(Base):
     student = relationship(Student)
 
 
-engine = create_engine('sqlite:///testing.db')
+engine = create_engine('sqlite:///test.db')
 
 # engine = create_engine('sqlite:///database.db')
 
