@@ -35,6 +35,7 @@ def show_projects():
     return render_template('main.html', projects=PROJECTS)
 
 
+
 def get_raw_score(project):
     """
     Return # of students that have marked the given project as a preference
@@ -52,7 +53,7 @@ def get_raw_score(project):
 
 def add_proj_obj_to_database():
     for project_object in SESSION_1_PROJECTS:
-        print project_object.proj_name
+        # print project_object.proj_name
         if project_object.proj_name != 'Session 1 Not Matched':
             project = SESSION.query(Project).filter_by(
                 name=project_object.proj_name).one()
@@ -61,7 +62,7 @@ def add_proj_obj_to_database():
                 project.students.append(student)
                 SESSION.add(project)
     for project_object in SESSION_2_PROJECTS:
-        print project_object.proj_name
+        # print project_object.proj_name
         if project_object.proj_name != 'Session 2 Not Matched':
             project = SESSION.query(Project).filter_by(
                 name=project_object.proj_name).one()
@@ -70,7 +71,7 @@ def add_proj_obj_to_database():
                 project.students.append(student)
                 SESSION.add(project)
     for project_object in SESSION_3_PROJECTS:
-        print project_object.proj_name
+        # print project_object.proj_name
         if project_object.proj_name != 'Session 3 Not Matched':
             project = SESSION.query(Project).filter_by(
                 name=project_object.proj_name).one()
@@ -79,7 +80,7 @@ def add_proj_obj_to_database():
                 project.students.append(student)
                 SESSION.add(project)
     for project_object in SESSION_4_PROJECTS:
-        print project_object.proj_name
+        # print project_object.proj_name
         if project_object.proj_name != 'Session 4 Not Matched':
             project = SESSION.query(Project).filter_by(
                 name=project_object.proj_name).one()
@@ -144,34 +145,35 @@ def get_underfilled_groups():
     projs = []
     projects = raw_sort()
     for proj in projects:
+        # print proj
         project = SESSION.query(Project).filter_by(name=proj).one()
         if project.raw_score < MIN_STUDS_PER_GROUP:
             projs.append(project.name)
     return projs
 
 
-def print_projects():
-    '''prints all projects in each sesison'''
-    print 'Session 1 Projects: '
-    for proj in SESSION_1_PROJECTS:
-        print 'Project: ' + proj.proj_name
-        print 'Students: '
-        print proj.students
-    print 'Session 2 Projects: '
-    for proj in SESSION_2_PROJECTS:
-        print 'Project: ' + proj.proj_name
-        print 'Students: '
-        print proj.students
-    print 'Session 3 Projects: '
-    for proj in SESSION_3_PROJECTS:
-        print 'Project: ' + proj.proj_name
-        print 'Students: '
-        print proj.students
-    print 'Session 4 Projects: '
-    for proj in SESSION_4_PROJECTS:
-        print 'Project: ' + proj.proj_name
-        print 'Students: '
-        print proj.students
+# def print_projects():
+#     '''prints all projects in each sesison'''
+#     print 'Session 1 Projects: '
+#     for proj in SESSION_1_PROJECTS:
+#         print 'Project: ' + proj.proj_name
+#         print 'Students: '
+#         print proj.students
+#     print 'Session 2 Projects: '
+#     for proj in SESSION_2_PROJECTS:
+#         print 'Project: ' + proj.proj_name
+#         print 'Students: '
+#         print proj.students
+#     print 'Session 3 Projects: '
+#     for proj in SESSION_3_PROJECTS:
+#         print 'Project: ' + proj.proj_name
+#         print 'Students: '
+#         print proj.students
+#     print 'Session 4 Projects: '
+#     for proj in SESSION_4_PROJECTS:
+#         print 'Project: ' + proj.proj_name
+#         print 'Students: '
+#         print proj.students
 
 
 def give_all_prefs():
@@ -639,7 +641,7 @@ give_third_prefs()
 give_fourth_prefs()
 get_unmatched_students()
 add_proj_obj_to_database()
-print_projects()
+# print_projects()
 
 #
 # if __name__ == '__main__':

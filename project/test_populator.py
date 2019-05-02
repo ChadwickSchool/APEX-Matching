@@ -24,7 +24,7 @@ M = Project(name='A Look into Americas Growing Health Epidemic', session_number=
 N = Project(name='Mapping for Measles', session_number=2)
 O = Project(name='A Dogs Purpose: Therapy Dogs', session_number=3)
 P = Project(name='Ocean Friendly Restaurants in the South Bay', session_number=4)
-Q = Project(name='We\'re All Going To Die: Why The Butt Industry Will Destory Us All', session_number=4)
+Q = Project(name='WAe\'re All Going To Die: Why The Butt Industry Will Destory Us All', session_number=4)
 R = Project(name='Triggered: What Most People Dont Know About Sports Injury', session_number=1)
 S = Project(name='Spotlight: Using Childrens Theater to Enhance Multiple Intelligences', session_number=2)
 T = Project(name='Bully the Bullies: The New Anti Cyberbullying Approach', session_number=3)
