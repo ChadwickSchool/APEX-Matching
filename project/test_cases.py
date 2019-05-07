@@ -101,13 +101,63 @@ class BasicTests(unittest.TestCase):
 #TODO: Student is in the session it was assigned to 
     def is_student_in_session(student, session_number):
         """Tests to see if a student is in the session that it is assigned to"""
-        pass
+        #Go through each session and check to see if any session in that session number
+        #has that student in it.
+        students = SESSION.query(Student).all()
+        for student in students:
+            #how to get specific session? 
+            sess1 = SESSION.query(Project).filter_by(session_number = 1)
+            sess2 = SESSION.query(Project).filter_by(session_number = 2)
+            sess3 = SESSION.query(Project).filter_by(session_number = 3)
+            sess4 = SESSION.query(Project).filter_by(session_number = 4)
+            
+            for project in sess1:
+                has_student = 0
+                studentlist = project(students)
+                if student in studentlist:
+                    has_student += 1
+                if has_student1 != 1:
+                    assert False
+                else:
+                    print "Session 1 has student"
+
+            for project in sess2:
+                has_student = 0
+                studentlist = project(students)
+                if student in studentlist:
+                    has_student += 1
+                if has_student1 != 1:
+                    assert False
+                else: 
+                    print "Session 2 has student"
+
+            for project in sess3:
+                has_student = 0
+                studentlist = project(students)
+                if student in studentlist:
+                    has_student += 1
+                if has_student1 != 1:
+                    assert False
+                else:
+                    print "Session 3 has student"
+
+            for project in sess4:
+                has_student = 0
+                studentlist = project(students)
+                if student in studentlist:
+                    has_student += 1
+                if has_student1 != 1:
+                    assert False
+                else:
+                    print "Session 4 has student"
+
 
     #TODO: 80% OF STUDENTS GET FIRST PREF
     def most_students_get_first(self):
         students = SESSION.query(Student).all()
         for student in students: 
-            
+
+
 
 if __name__ == "__main__":
     unittest.main()
