@@ -3,7 +3,7 @@ import unittest
 from flask import Flask
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from test_database_setup import Project, Base, Student, Pref
+from database_setup import Project, Base, Student, Pref
 from algorithm_16pref import get_raw_score, get_popularity_score
 from algorithm_16pref import raw_sort, get_underfilled_groups
 from algorithm_16pref import pop_sort, give_all_prefs
@@ -76,7 +76,6 @@ class BasicTests(unittest.TestCase):
     #             print student_name
     #             is_true += 1
     #     expected_results = [1]
-    #TODO: EVERY STUDENT ASSIGNED
 
     def test_all_students_assigned(self):
         """Test to see if all students are ssigned to a project"""
@@ -99,63 +98,78 @@ class BasicTests(unittest.TestCase):
                 print "Students Assigned"
     
 #TODO: Student is in the session it was assigned to 
-    def is_student_in_session(student, session_number):
+    def test_is_student_in_session(self):
         """Tests to see if a student is in the session that it is assigned to"""
         #Go through each session and check to see if any session in that session number
         #has that student in it.
         students = SESSION.query(Student).all()
+        sess1 = SESSION.query(Project).filter_by(session_number=1).all()
+        sess2 = SESSION.query(Project).filter_by(session_number=2).all()
+        sess3 = SESSION.query(Project).filter_by(session_number=3).all()
+        sess4 = SESSION.query(Project).filter_by(session_number=4).all()
         for student in students:
             #how to get specific session? 
-            sess1 = SESSION.query(Project).filter_by(session_number = 1)
-            sess2 = SESSION.query(Project).filter_by(session_number = 2)
-            sess3 = SESSION.query(Project).filter_by(session_number = 3)
-            sess4 = SESSION.query(Project).filter_by(session_number = 4)
-            
             for project in sess1:
+                print "yes"
                 has_student = 0
-                studentlist = project(students)
+                studentlist = project.students
                 if student in studentlist:
                     has_student += 1
-                if has_student1 != 1:
+                if has_student != 1:
                     assert False
                 else:
                     print "Session 1 has student"
 
             for project in sess2:
+                print "yes"
                 has_student = 0
                 studentlist = project(students)
                 if student in studentlist:
                     has_student += 1
-                if has_student1 != 1:
+                if has_student != 1:
                     assert False
                 else: 
                     print "Session 2 has student"
 
             for project in sess3:
+                print "yes"
                 has_student = 0
                 studentlist = project(students)
                 if student in studentlist:
                     has_student += 1
-                if has_student1 != 1:
+                if has_student != 1:
                     assert False
                 else:
                     print "Session 3 has student"
 
             for project in sess4:
+                print "yes"
                 has_student = 0
                 studentlist = project(students)
                 if student in studentlist:
                     has_student += 1
-                if has_student1 != 1:
+                if has_student != 1:
                     assert False
                 else:
                     print "Session 4 has student"
 
-
     #TODO: 80% OF STUDENTS GET FIRST PREF
     def most_students_get_first(self):
-        students = SESSION.query(Student).all()
-        for student in students: 
+        """Tests to see if most students get their first pref"""
+        first_pref = SESSION.query(Pref).filter_by(pref_number = 1).all()
+        numpref = 0
+        print "asdfhelpmeplsimtrappedinthemachineeeee"
+        all_students = SESSION.query(Student).count()
+        for pref in first_pref:
+            student = pref.student
+            projects = SESSION.query(Project).all()
+            for project in projects:
+                student1 = project(students)
+                if student not in student1:
+                    numpref += 1
+        numpref1 = numpref/all_students
+        if numpref1 <= 0.8:
+            assert False    
 
 
 
