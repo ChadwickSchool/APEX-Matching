@@ -56,6 +56,7 @@ class BasicTests(unittest.TestCase):
             else: 
                 print "Students Assigned"
     
+#TODO: Check your logic on this one
     def test_is_student_in_session(self):
         """Tests to see if a student is in the session that it is assigned to"""
         students = SESSION.query(Student).all()
@@ -64,45 +65,47 @@ class BasicTests(unittest.TestCase):
         sess3 = SESSION.query(Project).filter_by(session_number=3).all()
         sess4 = SESSION.query(Project).filter_by(session_number=4).all()
         for student in students:
+            has_student = 0
+            #sess1 should be the student's sess1 project, not all the projects. You can probably get the 
             for project in sess1:
                 print "yes"
-                has_student = 0
                 studentlist = project.students
                 if student in studentlist:
                     has_student += 1
+                    #Check if has student after the loop
                 if has_student != 1:
-                    assert False
+                    print "errrrrrreeeeee"
+                    print has_student
+                    assert False, "You're gay"
                 else:
-                    print "Session 1 has student"
+                    print "Session 1 has student" 
 
             for project in sess2:
                 print "yes"
-                has_student = 0
-                studentlist = project(students)
+                studentlist = project.students
                 if student in studentlist:
                     has_student += 1
-                if has_student != 1:
+                     #this should be != 2 and increments for each test
+                if has_student != 2:
                     assert False
                 else: 
                     print "Session 2 has student"
 
             for project in sess3:
                 print "yes"
-                has_student = 0
-                studentlist = project(students)
+                studentlist = project.students
                 if student in studentlist:
                     has_student += 1
-                if has_student != 1:
+                if has_student != 3:
                     assert False
                 else:
                     print "Session 3 has student"
 
             for project in sess4:
                 print "yes"
-                has_student = 0
-                studentlist = project(students)
+                studentlist = project.students
                 if student in studentlist:
-                    has_student += 1
+                    has_student += 4
                 if has_student != 1:
                     assert False
                 else:
@@ -111,20 +114,23 @@ class BasicTests(unittest.TestCase):
 
     def test_most_students_get_first(self):
         """Tests to see if most students get their first pref"""
-        print "this is where the fun begins"
+        session = DBSESSION()
         numpref = 0
-        first_pref = SESSION.query(Pref).filter_by(pref_number = 1).all()
-        print "asadf"
+        first_pref = SESSION.query(Pref).filter_by(pref_number=1).all()
+        print "Number of first preferences" + str(len(first_pref)) 
         all_students = SESSION.query(Student).count()
-        print "ill have you know i graduated at the top of my class"
         for pref in first_pref:
-            student = pref.student
-            projects = SESSION.query(Project).all()
-            for project in projects:
-                student1 = project.students
-                if student not in student1:
+            current_student = pref.student
+            project = session.query(Project).filter_by(name=pref.name).first()
+            for student in project.students:
+                if student.email == current_student.email:
                     numpref += 1
-        numpref1 = numpref/all_students
+        
+        print "Numpref is " + str(numpref)
+        thiccpref = float(all_students) * 4
+        numpref1 = numpref/thiccpref
+        print "Numpref1 is: "
+        print numpref1
         if numpref1 <= 0.8:
             assert False    
 
