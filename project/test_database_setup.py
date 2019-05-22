@@ -59,6 +59,18 @@ class Student(Base):
             'has_chosen_projects': self.has_chosen_projects
         }
 
+    def __eq__(self, other):
+        """Overrides the default implementation"""
+        if isinstance(other, self.__class__):
+            return self.id == other.id and self.name == other.name and self.email == other.email and self.has_chosen_projects == other.has_chosen_projects
+        return False
+        
+    @property
+    def __ne__(self, other):
+        """Overrides the default implementation (unnecessary in Python 3)"""
+        return not self.__eq__(other)
+
+
 
 class Pref(Base):
     __tablename__ = 'pref'
@@ -75,3 +87,12 @@ engine = create_engine('sqlite:///testdatabase.db')
 # test = create_engine('mysql+pymysql://chadwick:godolphins@apex-matching.c0plu8oomro4.us-east-2.rds.amazonaws.com:3306/testdb')
 
 Base.metadata.create_all(engine)
+
+# if __name__ == "__main__":
+#     student1 = Student(id=400, name="Test Student", email="teststudentemail1@ihatepython.com", has_chosen_projects=False)
+#     student2 = Student(id=400, name="Test Student", email="teststudentemail1@ihatepython.com", has_chosen_projects=False)
+#     student3 = Student(id=300, name="Test Student", email="teststudentemail1@ihatepython.com", has_chosen_projects=False)
+#     students = [student1, student3]
+#     print student1 == student2
+#     print student2 in students
+
