@@ -15,16 +15,14 @@ SESSION = DBSESSION()
 
 
 
-
 class BasicTests(unittest.TestCase):
     """Umbrella class of all test cases"""
 
     def test_max_pop(self):
-        """Test to see if any population is above 15"""
+        """Test to see if any project's population is above the Maximum Students Per Group limit"""
         list_num_fail = 0
         projects = SESSION.query(Project).all()
         for proj in projects:
-            num_students = 0
             num_students = len(proj.students)
             if num_students >= MAX_STUDS_PER_GROUP:
                 list_num_fail += 1
@@ -66,7 +64,7 @@ class BasicTests(unittest.TestCase):
         return len(students) == 0 and are_all_students_matched
 
     def test_is_student_in_session(self):
-        """Tests to see if a student is in the session that it is assigned to"""
+        """Test to see if the student is assigned to the right project"""
         for i in range(1, 5):
             students_list = SESSION.query(Student).all()
             test = self.has_students_been_assigned(students=students_list, session_num=i)
@@ -75,11 +73,11 @@ class BasicTests(unittest.TestCase):
         assert True
 
     def test_most_students_get_first(self):
-        """Tests to see if most students get their first pref"""
+        """Tests to see if at least 80% of students students get their first preference"""
         session = DBSESSION()
         numpref = 0
         first_pref = SESSION.query(Pref).filter_by(pref_number=1).all()
-        print "Number of first preferences" + str(len(first_pref)) 
+        print "Number of first preferences" + str(len(first_pref))
         all_students = SESSION.query(Student).count()
         for pref in first_pref:
             current_student = pref.student
@@ -92,7 +90,7 @@ class BasicTests(unittest.TestCase):
         print "Numpref1 is: "
         print numpref1
         if numpref1 <= 0.8:
-            assert False    
+            assert False
 
 if __name__ == "__main__":
     unittest.main()
